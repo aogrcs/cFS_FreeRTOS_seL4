@@ -26,14 +26,14 @@
 ## Operating System
 ## OS = The operating system selected for the Abstraction implementation
 ##---------------------------------------------------------
-OS = FreeRTOS
-## OS = rtems ##20180110 test for rtems
+## OS = FreeRTOS
+OS = rtems ##20180110 test for rtems
 
 ##---------------------------------------------------------
 ## PSP -- CFE Platform Support Package
 ##---------------------------------------------------------
-PSP = pc-freertos
-## PSP = mcf5235-rtems ##20180110 test for rtems
+## PSP = pc-freertos
+PSP = mcf5235-rtems ##20180110 test for rtems
 
 ##---------------------------------------------------------
 ## BSP -- OSAL BSP/Operating system for the board
@@ -49,5 +49,5 @@ PSP = pc-freertos
 ## BSP = sis-rtems           -- RTEMS Sparc Instruction Simulator (GDB)
 ## BSP = tx2-seL4            -- seL4  tx2(20180110 just for test now)
 ##---------------------------------------------------------
-BSP = pc-rtos
-## BSP = mcf5235-rtems ##20180110 test for rtems
+## BSP = pc-freertos
+BSP = mcf5235-rtems ##20180110 test for rtems
