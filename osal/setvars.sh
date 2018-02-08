@@ -11,6 +11,6 @@ export OSAL_SRC=`pwd`
 # Example: standard RTEMS build/install directory:
 #    export RTEMS_BSP_BASE=/opt/rtems-4.10
 # The following is my personal RTEMS BSP build directory
-export RTEMS_BSP_BASE="/home/acudmore/Projects/rtems-devkit/rtems-bsps/rtems-4.10"
+export RTEMS_BSP_BASE="/home/simulink/rtems"
 
 cd ..

@@ -12,8 +12,9 @@
 ## WARNINGS=-Wall -ansi -pedantic -Wstrict-prototypes
 WARNINGS	= -Wall 
 
-SYSINCS = 
-# SYSINCS = -I/opt/rtems-devkit/cexp/m68k-rtems4.9-cexp/include/
+## SYSINCS = 
+## SYSINCS = -I/opt/rtems-devkit/cexp/m68k-rtems4.9-cexp/include/
+SYSINCS = -I/home/simulink/rtems/cpukit/include -I/home/simulink/rtems/cpukit/score/cpu/m68k/include
 
 ##
 ## Target Defines for the OS, Hardware Arch, etc..
@@ -28,7 +29,8 @@ ENDIAN_DEFS=-D_EB -DENDIAN=_EB -DSOFTWARE_BIG_BIT_ORDER
 ##
 ## Compiler Architecture Switches ( double check arch switch -m52xx, m523x etc.. )
 ## 
-ARCH_OPTS = --pipe -fomit-frame-pointer -malign-int -m528x  -B/opt/rtems-devkit/rtems-bsps/rtems-4.10/m68k-rtems4.10/mcf5235/lib/ -specs bsp_specs -qrtems
+## ARCH_OPTS = --pipe -fomit-frame-pointer -malign-int -m528x  -B/opt/rtems-devkit/rtems-bsps/rtems-4.10/m68k-rtems4.10/mcf5235/lib/ -specs bsp_specs -qrtems
+ARCH_OPTS = --pipe -fomit-frame-pointer -malign-int -m528x  -B/home/simulink/rtems/c/src/lib/libbsp/m68k/mcf5235/startup -specs bsp_specs -qrtems
 
 ##
 ## Application specific compiler switches 
@@ -80,10 +82,16 @@ CP=cp
 ##
 ## Compiler tools
 ##
-COMPILER  = m68k-rtems4.10-gcc
-ASSEMBLER  = m68k-rtems4.10-gcc
-LINKER	  = m68k-rtems4.10-ld
-AR	  = m68k-rtems4.10-ar
-NM        = m68k-rtems4.10-nm
-OBJCPY    = m68k-rtems4.10-objcopy
+## COMPILER  = m68k-rtems4.10-gcc
+COMPILER  = m68k-rtems5-gcc
+## ASSEMBLER  = m68k-rtems4.10-gcc
+ASSEMBLER  = m68k-rtems5-gcc
+#LINKER	  = m68k-rtems4.10-ld
+LINKER	  = m68k-rtems5-ld
+## AR	  = m68k-rtems4.10-ar
+AR	  = m68k-rtems5-ar
+## NM        = m68k-rtems4.10-nm
+NM        = m68k-rtems5-nm
+## OBJCPY    = m68k-rtems4.10-objcopy
+OBJCPY    = m68k-rtems5-objcopy
 TABLE_BIN = elf2cfetbl
