@@ -39,7 +39,7 @@
 #include "cfe_platform_cfg.h"  /* for processor ID */
 
 #include "cfe_psp.h" 
-#include "cfe_psp_memory.h"           
+#include "cfe_psp_memory.h"
 
 /*
 **  External Declarations
@@ -60,7 +60,7 @@ int timer_count = 0;
 
 rtems_timer_service_routine CFE_PSP_1hzTimer( rtems_id timer_id, void *user_data)
 {
-   int status;
+  int status;
 
    timer_count++;
   

@@ -14,7 +14,6 @@ WARNINGS	= -Wall
 
 ## SYSINCS = 
 ## SYSINCS = -I/opt/rtems-devkit/cexp/m68k-rtems4.9-cexp/include/
-SYSINCS = -I/home/simulink/rtems/cpukit/include -I/home/simulink/rtems/cpukit/score/cpu/m68k/include
 
 ##
 ## Target Defines for the OS, Hardware Arch, etc..
@@ -30,7 +29,7 @@ ENDIAN_DEFS=-D_EB -DENDIAN=_EB -DSOFTWARE_BIG_BIT_ORDER
 ## Compiler Architecture Switches ( double check arch switch -m52xx, m523x etc.. )
 ## 
 ## ARCH_OPTS = --pipe -fomit-frame-pointer -malign-int -m528x  -B/opt/rtems-devkit/rtems-bsps/rtems-4.10/m68k-rtems4.10/mcf5235/lib/ -specs bsp_specs -qrtems
-ARCH_OPTS = --pipe -fomit-frame-pointer -malign-int -m528x  -B/home/simulink/rtems/c/src/lib/libbsp/m68k/mcf5235/startup -specs bsp_specs -qrtems
+ARCH_OPTS = --pipe -fomit-frame-pointer -malign-int -m528x  -B/home/simulink/development/rtems/rtems-build/m68k-rtems5/mcf5235/lib -specs bsp_specs -qrtems
 
 ##
 ## Application specific compiler switches 
