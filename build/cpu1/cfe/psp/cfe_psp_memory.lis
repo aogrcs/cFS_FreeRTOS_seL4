@@ -1,0 +1,4476 @@
+68K GAS   			page 1
+
+
+   1               	
+   2               	.file"cfe_psp_memory.c"
+   3               	.text
+   4               	.Ltext0:
+   5               	.cfi_sections.debug_frame
+   6               	.commCFE_PSP_ReservedMemoryPtr,4,4
+   7               	.align2
+   8               	.globlCFE_PSP_GetCDSSize
+   9               	.typeCFE_PSP_GetCDSSize, @function
+  10               	CFE_PSP_GetCDSSize:
+  11               	.LFB59:
+  12               	.file 1 "/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c"
+   1:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /******************************************************************************
+   2:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** ** File:  cfe_psp_memory.c
+   3:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+   4:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **      mcf5235 Coldfire RTEMS version
+   5:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+   6:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **      Copyright (c) 2004-2012, United States government as represented by the 
+   7:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **      administrator of the National Aeronautics Space Administration.  
+   8:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **      All rights reserved. This software(cFE) was created at NASA Goddard 
+   9:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **      Space Flight Center pursuant to government contracts.
+  10:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+  11:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **      This is governed by the NASA Open Source Agreement and may be used, 
+  12:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **      distributed and modified only pursuant to the terms of that agreement.
+  13:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** ** 
+  14:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+  15:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+  16:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** ** Purpose:
+  17:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **   cFE PSP Memory related functions. This is the implementation of the cFE 
+  18:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **   memory areas that have to be preserved, and the API that is designed to allow
+  19:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **   acccess to them. It also contains memory related routines to return the
+  20:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **   address of the kernel code used in the cFE checksum.
+  21:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+  22:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** ** History:
+  23:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **   2007/09/23  A. Cudmore      | m5235bcc Coldfire RTEMS version
+  24:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+  25:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** ******************************************************************************/
+  26:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+  27:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /*
+  28:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Include Files
+  29:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+  30:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** #include <stdio.h>
+  31:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** #include <string.h>
+  32:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+  33:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /*
+  34:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** ** cFE includes 
+  35:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+  36:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** #include "common_types.h"
+  37:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** #include "osapi.h"
+  38:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** #include "cfe_es.h"            /* For reset types */
+  39:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** #include "cfe_platform_cfg.h"  /* for processor ID */
+  40:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+  41:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /*
+  42:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** ** Types and prototypes for this module
+  43:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+  44:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** #include "cfe_psp.h" 
+  45:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** #include "cfe_psp_memory.h"           
+68K GAS   			page 2
+
+
+  46:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+  47:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /*
+  48:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  External Declarations
+  49:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+  50:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+  51:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /*
+  52:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** ** Global variables
+  53:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+  54:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+  55:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /*
+  56:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** ** Pointer to the vxWorks USER_RESERVED_MEMORY area
+  57:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** ** The sizes of each memory area is defined in os_processor.h for this architecture.
+  58:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+  59:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** CFE_PSP_ReservedMemory_t *CFE_PSP_ReservedMemoryPtr; 
+  60:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+  61:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /*
+  62:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** *********************************************************************************
+  63:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** ** CDS related functions
+  64:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** *********************************************************************************
+  65:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+  66:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+  67:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /******************************************************************************
+  68:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Function: CFE_PSP_GetCDSSize
+  69:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+  70:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Purpose: 
+  71:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    This function fetches the size of the OS Critical Data Store area.
+  72:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+  73:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Arguments:
+  74:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+  75:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+  76:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Return:
+  77:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+  78:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+  79:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+  80:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** int32 CFE_PSP_GetCDSSize(uint32 *SizeOfCDS)
+  81:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** {
+  13               	.loc 1 81 0
+  14               	.cfi_startproc
+  15 0000 598F      	subq.l #4,%sp
+  16               	.cfi_def_cfa_offset 8
+  82:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    int32 return_code;
+  83:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+  84:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    if ( SizeOfCDS == NULL )
+  17               	.loc 1 84 0
+  18 0002 4AAF 0008 	tst.l 8(%sp)
+  19 0006 6608      	jne .L2
+  85:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+  86:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        return_code = OS_ERROR;
+  20               	.loc 1 86 0
+  21 0008 2EBC FFFF 	move.l #-1,(%sp)
+  21      FFFF 
+  22 000e 600C      	jra .L3
+  23               	.L2:
+  87:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    }
+  88:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    else
+  89:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+  90:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        *SizeOfCDS = CFE_PSP_CDS_SIZE;
+68K GAS   			page 3
+
+
+  24               	.loc 1 90 0
+  25 0010 206F 0008 	move.l 8(%sp),%a0
+  26 0014 20BC 0002 	move.l #131072,(%a0)
+  26      0000 
+  91:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        return_code = OS_SUCCESS;
+  27               	.loc 1 91 0
+  28 001a 4297      	clr.l (%sp)
+  29               	.L3:
+  92:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    }
+  93:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    return(return_code);
+  30               	.loc 1 93 0
+  31 001c 2017      	move.l (%sp),%d0
+  94:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** }
+  32               	.loc 1 94 0
+  33 001e 588F      	addq.l #4,%sp
+  34 0020 4E75      	rts
+  35               	.cfi_endproc
+  36               	.LFE59:
+  37               	.sizeCFE_PSP_GetCDSSize, .-CFE_PSP_GetCDSSize
+  38               	.align2
+  39               	.globlCFE_PSP_WriteToCDS
+  40               	.typeCFE_PSP_WriteToCDS, @function
+  41               	CFE_PSP_WriteToCDS:
+  42               	.LFB60:
+  95:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+  96:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /******************************************************************************
+  97:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Function: CFE_PSP_WriteToCDS
+  98:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+  99:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Purpose:
+ 100:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    This function writes to the CDS Block.
+ 101:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 102:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Arguments:
+ 103:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+ 104:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 105:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Return:
+ 106:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+ 107:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+ 108:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** int32 CFE_PSP_WriteToCDS(void *PtrToDataToWrite, uint32 CDSOffset, uint32 NumBytes)
+ 109:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** {
+  43               	.loc 1 109 0
+  44               	.cfi_startproc
+  45 0022 518F      	subq.l #8,%sp
+  46               	.cfi_def_cfa_offset 12
+ 110:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    uint8 *CopyPtr;
+ 111:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    int32  return_code;
+ 112:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****          
+ 113:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    if ( PtrToDataToWrite == NULL )
+  47               	.loc 1 113 0
+  48 0024 4AAF 000C 	tst.l 12(%sp)
+  49 0028 6608      	jne .L6
+ 114:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+ 115:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        return_code = OS_ERROR;
+  50               	.loc 1 115 0
+  51 002a 70FF      	moveq #-1,%d0
+  52 002c 2F40 0004 	move.l %d0,4(%sp)
+  53 0030 6054      	jra .L7
+  54               	.L6:
+68K GAS   			page 4
+
+
+ 116:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    }
+ 117:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    else
+ 118:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+ 119:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        if ( (CDSOffset < CFE_PSP_CDS_SIZE ) && ( (CDSOffset + NumBytes) <= CFE_PSP_CDS_SIZE ))
+  55               	.loc 1 119 0
+  56 0032 207C 0001 	move.l #131071,%a0
+  56      FFFF 
+  57 0038 B1EF 0010 	cmp.l 16(%sp),%a0
+  58 003c 6542      	jcs .L8
+  59               	.loc 1 119 0 is_stmt 0 discriminator 1
+  60 003e 202F 0010 	move.l 16(%sp),%d0
+  61 0042 D0AF 0014 	add.l 20(%sp),%d0
+  62 0046 0C80 0002 	cmp.l #131072,%d0
+  62      0000 
+  63 004c 6232      	jhi .L8
+ 120:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        {
+ 121:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****           CopyPtr = &(CFE_PSP_ReservedMemoryPtr->CDSMemory[CDSOffset]);
+  64               	.loc 1 121 0 is_stmt 1
+  65 004e 2239 0000 	move.l CFE_PSP_ReservedMemoryPtr,%d1
+  65      0000 
+  66 0054 202F 0010 	move.l 16(%sp),%d0
+  67 0058 0680 0022 	add.l #2271248,%d0
+  67      A810 
+  68 005e 2041      	move.l %d1,%a0
+  69 0060 D1C0      	add.l %d0,%a0
+  70 0062 2E88      	move.l %a0,(%sp)
+ 122:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****           memcpy(CopyPtr, (char *)PtrToDataToWrite,NumBytes);
+  71               	.loc 1 122 0
+  72 0064 2F2F 0014 	move.l 20(%sp),-(%sp)
+  73               	.cfi_def_cfa_offset 16
+  74 0068 2F2F 0010 	move.l 16(%sp),-(%sp)
+  75               	.cfi_def_cfa_offset 20
+  76 006c 2F2F 0008 	move.l 8(%sp),-(%sp)
+  77               	.cfi_def_cfa_offset 24
+  78 0070 4EB9 0000 	jsr memcpy
+  78      0000 
+  79 0076 4FEF 000C 	lea (12,%sp),%sp
+  80               	.cfi_def_cfa_offset 12
+ 123:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****           
+ 124:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****           return_code = OS_SUCCESS;
+  81               	.loc 1 124 0
+  82 007a 42AF 0004 	clr.l 4(%sp)
+  83 007e 6006      	jra .L7
+  84               	.L8:
+ 125:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        }
+ 126:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        else
+ 127:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        {
+ 128:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****           return_code = OS_ERROR;
+  85               	.loc 1 128 0
+  86 0080 70FF      	moveq #-1,%d0
+  87 0082 2F40 0004 	move.l %d0,4(%sp)
+  88               	.L7:
+ 129:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        }
+ 130:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        
+ 131:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    } /* end if PtrToDataToWrite == NULL */
+ 132:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+ 133:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    return(return_code);
+68K GAS   			page 5
+
+
+  89               	.loc 1 133 0
+  90 0086 202F 0004 	move.l 4(%sp),%d0
+ 134:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** }
+  91               	.loc 1 134 0
+  92 008a 508F      	addq.l #8,%sp
+  93 008c 4E75      	rts
+  94               	.cfi_endproc
+  95               	.LFE60:
+  96               	.sizeCFE_PSP_WriteToCDS, .-CFE_PSP_WriteToCDS
+  97               	.align2
+  98               	.globlCFE_PSP_ReadFromCDS
+  99               	.typeCFE_PSP_ReadFromCDS, @function
+ 100               	CFE_PSP_ReadFromCDS:
+ 101               	.LFB61:
+ 135:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 136:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 137:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /******************************************************************************
+ 138:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Function: CFE_PSP_ReadFromCDS
+ 139:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 140:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Purpose:
+ 141:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **   This function reads from the CDS Block
+ 142:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 143:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Arguments:
+ 144:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+ 145:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 146:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Return:
+ 147:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+ 148:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+ 149:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 150:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** int32 CFE_PSP_ReadFromCDS(void *PtrToDataToRead, uint32 CDSOffset, uint32 NumBytes)
+ 151:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** {
+ 102               	.loc 1 151 0
+ 103               	.cfi_startproc
+ 104 008e 518F      	subq.l #8,%sp
+ 105               	.cfi_def_cfa_offset 12
+ 152:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    uint8 *CopyPtr;
+ 153:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    int32  return_code;
+ 154:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       
+ 155:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    if ( PtrToDataToRead == NULL )
+ 106               	.loc 1 155 0
+ 107 0090 4AAF 000C 	tst.l 12(%sp)
+ 108 0094 6608      	jne .L11
+ 156:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+ 157:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        return_code = OS_ERROR;
+ 109               	.loc 1 157 0
+ 110 0096 70FF      	moveq #-1,%d0
+ 111 0098 2F40 0004 	move.l %d0,4(%sp)
+ 112 009c 6054      	jra .L12
+ 113               	.L11:
+ 158:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    }
+ 159:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    else
+ 160:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+ 161:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        if ( (CDSOffset < CFE_PSP_CDS_SIZE ) && ( (CDSOffset + NumBytes) <= CFE_PSP_CDS_SIZE ))
+ 114               	.loc 1 161 0
+ 115 009e 207C 0001 	move.l #131071,%a0
+ 115      FFFF 
+ 116 00a4 B1EF 0010 	cmp.l 16(%sp),%a0
+68K GAS   			page 6
+
+
+ 117 00a8 6542      	jcs .L13
+ 118               	.loc 1 161 0 is_stmt 0 discriminator 1
+ 119 00aa 202F 0010 	move.l 16(%sp),%d0
+ 120 00ae D0AF 0014 	add.l 20(%sp),%d0
+ 121 00b2 0C80 0002 	cmp.l #131072,%d0
+ 121      0000 
+ 122 00b8 6232      	jhi .L13
+ 162:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        {
+ 163:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****           CopyPtr = &(CFE_PSP_ReservedMemoryPtr->CDSMemory[CDSOffset]);
+ 123               	.loc 1 163 0 is_stmt 1
+ 124 00ba 2239 0000 	move.l CFE_PSP_ReservedMemoryPtr,%d1
+ 124      0000 
+ 125 00c0 202F 0010 	move.l 16(%sp),%d0
+ 126 00c4 0680 0022 	add.l #2271248,%d0
+ 126      A810 
+ 127 00ca 2041      	move.l %d1,%a0
+ 128 00cc D1C0      	add.l %d0,%a0
+ 129 00ce 2E88      	move.l %a0,(%sp)
+ 164:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****           memcpy((char *)PtrToDataToRead,CopyPtr, NumBytes);
+ 130               	.loc 1 164 0
+ 131 00d0 2F2F 0014 	move.l 20(%sp),-(%sp)
+ 132               	.cfi_def_cfa_offset 16
+ 133 00d4 2F2F 0004 	move.l 4(%sp),-(%sp)
+ 134               	.cfi_def_cfa_offset 20
+ 135 00d8 2F2F 0014 	move.l 20(%sp),-(%sp)
+ 136               	.cfi_def_cfa_offset 24
+ 137 00dc 4EB9 0000 	jsr memcpy
+ 137      0000 
+ 138 00e2 4FEF 000C 	lea (12,%sp),%sp
+ 139               	.cfi_def_cfa_offset 12
+ 165:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****           
+ 166:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****           return_code = OS_SUCCESS;
+ 140               	.loc 1 166 0
+ 141 00e6 42AF 0004 	clr.l 4(%sp)
+ 142 00ea 6006      	jra .L12
+ 143               	.L13:
+ 167:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        }
+ 168:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        else
+ 169:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        {
+ 170:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****           return_code = OS_ERROR;
+ 144               	.loc 1 170 0
+ 145 00ec 70FF      	moveq #-1,%d0
+ 146 00ee 2F40 0004 	move.l %d0,4(%sp)
+ 147               	.L12:
+ 171:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        }
+ 172:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****        
+ 173:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    } /* end if PtrToDataToWrite == NULL */
+ 174:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+ 175:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    return(return_code);
+ 148               	.loc 1 175 0
+ 149 00f2 202F 0004 	move.l 4(%sp),%d0
+ 176:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+ 177:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** }
+ 150               	.loc 1 177 0
+ 151 00f6 508F      	addq.l #8,%sp
+ 152 00f8 4E75      	rts
+ 153               	.cfi_endproc
+68K GAS   			page 7
+
+
+ 154               	.LFE61:
+ 155               	.sizeCFE_PSP_ReadFromCDS, .-CFE_PSP_ReadFromCDS
+ 156               	.align2
+ 157               	.globlCFE_PSP_GetResetArea
+ 158               	.typeCFE_PSP_GetResetArea, @function
+ 159               	CFE_PSP_GetResetArea:
+ 160               	.LFB62:
+ 178:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 179:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /*
+ 180:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** *********************************************************************************
+ 181:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** ** ES Reset Area related functions
+ 182:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** *********************************************************************************
+ 183:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+ 184:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 185:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /******************************************************************************
+ 186:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Function: CFE_PSP_GetResetArea
+ 187:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 188:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Purpose:
+ 189:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **     This function returns the location and size of the ES Reset information area. 
+ 190:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **     This area is preserved during a processor reset and is used to store the 
+ 191:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **     ER Log, System Log and reset related variables
+ 192:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 193:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Arguments:
+ 194:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+ 195:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 196:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Return:
+ 197:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+ 198:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+ 199:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** int32 CFE_PSP_GetResetArea (void *PtrToResetArea, uint32 *SizeOfResetArea)
+ 200:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** {
+ 161               	.loc 1 200 0
+ 162               	.cfi_startproc
+ 163 00fa 518F      	subq.l #8,%sp
+ 164               	.cfi_def_cfa_offset 12
+ 201:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    int32   return_code;
+ 202:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    uint32 *TempPointer;
+ 203:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+ 204:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    if ( SizeOfResetArea == NULL )
+ 165               	.loc 1 204 0
+ 166 00fc 4AAF 0010 	tst.l 16(%sp)
+ 167 0100 6608      	jne .L16
+ 205:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+ 206:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       return_code = OS_ERROR;
+ 168               	.loc 1 206 0
+ 169 0102 70FF      	moveq #-1,%d0
+ 170 0104 2F40 0004 	move.l %d0,4(%sp)
+ 171 0108 6024      	jra .L17
+ 172               	.L16:
+ 207:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    }
+ 208:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    else
+ 209:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+ 210:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       TempPointer = (uint32 *)&(CFE_PSP_ReservedMemoryPtr->ResetMemory[0]);
+ 173               	.loc 1 210 0
+ 174 010a 2039 0000 	move.l CFE_PSP_ReservedMemoryPtr,%d0
+ 174      0000 
+ 175 0110 0680 0000 	add.l #16,%d0
+ 175      0010 
+68K GAS   			page 8
+
+
+ 176 0116 2E80      	move.l %d0,(%sp)
+ 211:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       memcpy(PtrToResetArea,&(TempPointer),sizeof(PtrToResetArea));
+ 177               	.loc 1 211 0
+ 178 0118 2017      	move.l (%sp),%d0
+ 179 011a 206F 000C 	move.l 12(%sp),%a0
+ 180 011e 2080      	move.l %d0,(%a0)
+ 212:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       *SizeOfResetArea = CFE_PSP_RESET_AREA_SIZE;
+ 181               	.loc 1 212 0
+ 182 0120 206F 0010 	move.l 16(%sp),%a0
+ 183 0124 20BC 0002 	move.l #174080,(%a0)
+ 183      A800 
+ 213:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       return_code = OS_SUCCESS;
+ 184               	.loc 1 213 0
+ 185 012a 42AF 0004 	clr.l 4(%sp)
+ 186               	.L17:
+ 214:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    }
+ 215:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+ 216:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    return(return_code);
+ 187               	.loc 1 216 0
+ 188 012e 202F 0004 	move.l 4(%sp),%d0
+ 217:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** }
+ 189               	.loc 1 217 0
+ 190 0132 508F      	addq.l #8,%sp
+ 191 0134 4E75      	rts
+ 192               	.cfi_endproc
+ 193               	.LFE62:
+ 194               	.sizeCFE_PSP_GetResetArea, .-CFE_PSP_GetResetArea
+ 195               	.align2
+ 196               	.globlCFE_PSP_GetUserReservedArea
+ 197               	.typeCFE_PSP_GetUserReservedArea, @function
+ 198               	CFE_PSP_GetUserReservedArea:
+ 199               	.LFB63:
+ 218:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 219:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /*
+ 220:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** *********************************************************************************
+ 221:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** ** ES User Reserved Area related functions
+ 222:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** *********************************************************************************
+ 223:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+ 224:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 225:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /******************************************************************************
+ 226:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Function: CFE_PSP_GetUserReservedArea
+ 227:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 228:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Purpose:
+ 229:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    This function returns the location and size of the memory used for the cFE
+ 230:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **     User reserved area.
+ 231:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 232:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Arguments:
+ 233:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+ 234:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 235:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Return:
+ 236:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+ 237:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+ 238:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** int32 CFE_PSP_GetUserReservedArea(void *PtrToUserArea, uint32 *SizeOfUserArea )
+ 239:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** {
+ 200               	.loc 1 239 0
+ 201               	.cfi_startproc
+ 202 0136 518F      	subq.l #8,%sp
+68K GAS   			page 9
+
+
+ 203               	.cfi_def_cfa_offset 12
+ 240:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    int32   return_code;
+ 241:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    uint32 *TempPointer;
+ 242:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+ 243:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    if ( SizeOfUserArea == NULL )
+ 204               	.loc 1 243 0
+ 205 0138 4AAF 0010 	tst.l 16(%sp)
+ 206 013c 6608      	jne .L20
+ 244:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+ 245:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       return_code = OS_ERROR;
+ 207               	.loc 1 245 0
+ 208 013e 70FF      	moveq #-1,%d0
+ 209 0140 2F40 0004 	move.l %d0,4(%sp)
+ 210 0144 6024      	jra .L21
+ 211               	.L20:
+ 246:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    }
+ 247:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    else
+ 248:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+ 249:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       TempPointer = (uint32 *)&(CFE_PSP_ReservedMemoryPtr->UserReservedMemory[0]);
+ 212               	.loc 1 249 0
+ 213 0146 2039 0000 	move.l CFE_PSP_ReservedMemoryPtr,%d0
+ 213      0000 
+ 214 014c 0680 0024 	add.l #2402320,%d0
+ 214      A810 
+ 215 0152 2E80      	move.l %d0,(%sp)
+ 250:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       memcpy(PtrToUserArea,&(TempPointer),sizeof(PtrToUserArea));
+ 216               	.loc 1 250 0
+ 217 0154 2017      	move.l (%sp),%d0
+ 218 0156 206F 000C 	move.l 12(%sp),%a0
+ 219 015a 2080      	move.l %d0,(%a0)
+ 251:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       *SizeOfUserArea = CFE_PSP_USER_RESERVED_SIZE;
+ 220               	.loc 1 251 0
+ 221 015c 206F 0010 	move.l 16(%sp),%a0
+ 222 0160 20BC 0010 	move.l #1048576,(%a0)
+ 222      0000 
+ 252:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       return_code = OS_SUCCESS;
+ 223               	.loc 1 252 0
+ 224 0166 42AF 0004 	clr.l 4(%sp)
+ 225               	.L21:
+ 253:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    }
+ 254:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+ 255:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    return(return_code);
+ 226               	.loc 1 255 0
+ 227 016a 202F 0004 	move.l 4(%sp),%d0
+ 256:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** }
+ 228               	.loc 1 256 0
+ 229 016e 508F      	addq.l #8,%sp
+ 230 0170 4E75      	rts
+ 231               	.cfi_endproc
+ 232               	.LFE63:
+ 233               	.sizeCFE_PSP_GetUserReservedArea, .-CFE_PSP_GetUserReservedArea
+ 234               	.align2
+ 235               	.globlCFE_PSP_GetVolatileDiskMem
+ 236               	.typeCFE_PSP_GetVolatileDiskMem, @function
+ 237               	CFE_PSP_GetVolatileDiskMem:
+ 238               	.LFB64:
+ 257:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+68K GAS   			page 10
+
+
+ 258:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /*
+ 259:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** *********************************************************************************
+ 260:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** ** ES Volatile disk memory related functions
+ 261:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** *********************************************************************************
+ 262:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+ 263:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 264:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /******************************************************************************
+ 265:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Function: CFE_PSP_GetVolatileDiskMem
+ 266:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 267:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Purpose:
+ 268:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    This function returns the location and size of the memory used for the cFE
+ 269:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **     volatile disk.
+ 270:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 271:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Arguments:
+ 272:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+ 273:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 274:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Return:
+ 275:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+ 276:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+ 277:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** int32 CFE_PSP_GetVolatileDiskMem(void *PtrToVolDisk, uint32 *SizeOfVolDisk )
+ 278:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** {
+ 239               	.loc 1 278 0
+ 240               	.cfi_startproc
+ 241 0172 518F      	subq.l #8,%sp
+ 242               	.cfi_def_cfa_offset 12
+ 279:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    int32   return_code;
+ 280:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    uint32 *TempPointer;
+ 281:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+ 282:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    if ( SizeOfVolDisk == NULL )
+ 243               	.loc 1 282 0
+ 244 0174 4AAF 0010 	tst.l 16(%sp)
+ 245 0178 6608      	jne .L24
+ 283:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+ 284:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       return_code = OS_ERROR;
+ 246               	.loc 1 284 0
+ 247 017a 70FF      	moveq #-1,%d0
+ 248 017c 2F40 0004 	move.l %d0,4(%sp)
+ 249 0180 6024      	jra .L25
+ 250               	.L24:
+ 285:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    }
+ 286:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    else
+ 287:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+ 288:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       TempPointer = (uint32 *)&(CFE_PSP_ReservedMemoryPtr->VolatileDiskMemory[0]);
+ 251               	.loc 1 288 0
+ 252 0182 2039 0000 	move.l CFE_PSP_ReservedMemoryPtr,%d0
+ 252      0000 
+ 253 0188 0680 0002 	add.l #174096,%d0
+ 253      A810 
+ 254 018e 2E80      	move.l %d0,(%sp)
+ 289:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       memcpy(PtrToVolDisk,&(TempPointer),sizeof(PtrToVolDisk));
+ 255               	.loc 1 289 0
+ 256 0190 2017      	move.l (%sp),%d0
+ 257 0192 206F 000C 	move.l 12(%sp),%a0
+ 258 0196 2080      	move.l %d0,(%a0)
+ 290:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       *SizeOfVolDisk = CFE_PSP_VOLATILE_DISK_SIZE;
+ 259               	.loc 1 290 0
+ 260 0198 206F 0010 	move.l 16(%sp),%a0
+68K GAS   			page 11
+
+
+ 261 019c 20BC 0020 	move.l #2097152,(%a0)
+ 261      0000 
+ 291:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       return_code = OS_SUCCESS;
+ 262               	.loc 1 291 0
+ 263 01a2 42AF 0004 	clr.l 4(%sp)
+ 264               	.L25:
+ 292:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 293:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    }
+ 294:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+ 295:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    return(return_code);
+ 265               	.loc 1 295 0
+ 266 01a6 202F 0004 	move.l 4(%sp),%d0
+ 296:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+ 297:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** }
+ 267               	.loc 1 297 0
+ 268 01aa 508F      	addq.l #8,%sp
+ 269 01ac 4E75      	rts
+ 270               	.cfi_endproc
+ 271               	.LFE64:
+ 272               	.sizeCFE_PSP_GetVolatileDiskMem, .-CFE_PSP_GetVolatileDiskMem
+ 273               	.section.rodata
+ 274               	.LC0:
+ 275 0000 4346 455F 	.string"CFE_PSP: Clearing Processor Reserved Memory.\n"
+ 275      5053 503A 
+ 275      2043 6C65 
+ 275      6172 696E 
+ 275      6720 5072 
+ 276               	.text
+ 277               	.align2
+ 278               	.globlCFE_PSP_InitProcessorReservedMemory
+ 279               	.typeCFE_PSP_InitProcessorReservedMemory, @function
+ 280               	CFE_PSP_InitProcessorReservedMemory:
+ 281               	.LFB65:
+ 298:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 299:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /*
+ 300:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** *********************************************************************************
+ 301:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** ** ES BSP Top Level Reserved memory initialization
+ 302:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** *********************************************************************************
+ 303:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+ 304:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 305:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /******************************************************************************
+ 306:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Function: CFE_PSP_InitProcessorReservedMemory
+ 307:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 308:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Purpose:
+ 309:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    This function performs the top level reserved memory initialization.
+ 310:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 311:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Arguments:
+ 312:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+ 313:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 314:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Return:
+ 315:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+ 316:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+ 317:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** int32 CFE_PSP_InitProcessorReservedMemory( uint32 RestartType )
+ 318:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** {
+ 282               	.loc 1 318 0
+ 283               	.cfi_startproc
+ 284 01ae 598F      	subq.l #4,%sp
+68K GAS   			page 12
+
+
+ 285               	.cfi_def_cfa_offset 8
+ 319:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    int32 return_code;
+ 320:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****  
+ 321:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    if ( RestartType != CFE_ES_PROCESSOR_RESET )
+ 286               	.loc 1 321 0
+ 287 01b0 7001      	moveq #1,%d0
+ 288 01b2 B0AF 0008 	cmp.l 8(%sp),%d0
+ 289 01b6 6734      	jeq .L28
+ 322:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+ 323:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       OS_printf("CFE_PSP: Clearing Processor Reserved Memory.\n");
+ 290               	.loc 1 323 0
+ 291 01b8 4879 0000 	pea .LC0
+ 291      0000 
+ 292               	.cfi_def_cfa_offset 12
+ 293 01be 4EB9 0000 	jsr OS_printf
+ 293      0000 
+ 294 01c4 588F      	addq.l #4,%sp
+ 295               	.cfi_def_cfa_offset 8
+ 324:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       memset((void *)CFE_PSP_ReservedMemoryPtr, 0, sizeof(CFE_PSP_ReservedMemory_t));
+ 296               	.loc 1 324 0
+ 297 01c6 2039 0000 	move.l CFE_PSP_ReservedMemoryPtr,%d0
+ 297      0000 
+ 298 01cc 2F3C 0034 	move.l #3450896,-(%sp)
+ 298      A810 
+ 299               	.cfi_def_cfa_offset 12
+ 300 01d2 42A7      	clr.l -(%sp)
+ 301               	.cfi_def_cfa_offset 16
+ 302 01d4 2F00      	move.l %d0,-(%sp)
+ 303               	.cfi_def_cfa_offset 20
+ 304 01d6 4EB9 0000 	jsr memset
+ 304      0000 
+ 305 01dc 4FEF 000C 	lea (12,%sp),%sp
+ 306               	.cfi_def_cfa_offset 8
+ 325:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       
+ 326:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       /*
+ 327:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       ** Set the default reset type in case a watchdog reset occurs 
+ 328:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       */
+ 329:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       CFE_PSP_ReservedMemoryPtr->bsp_reset_type = CFE_ES_PROCESSOR_RESET;
+ 307               	.loc 1 329 0
+ 308 01e0 2079 0000 	move.l CFE_PSP_ReservedMemoryPtr,%a0
+ 308      0000 
+ 309 01e6 20BC 0000 	move.l #1,(%a0)
+ 309      0001 
+ 310               	.L28:
+ 330:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 331:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    }      
+ 332:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    return_code = OS_SUCCESS;
+ 311               	.loc 1 332 0
+ 312 01ec 4297      	clr.l (%sp)
+ 333:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    return(return_code);
+ 313               	.loc 1 333 0
+ 314 01ee 2017      	move.l (%sp),%d0
+ 334:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 335:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** }
+ 315               	.loc 1 335 0
+ 316 01f0 588F      	addq.l #4,%sp
+ 317 01f2 4E75      	rts
+68K GAS   			page 13
+
+
+ 318               	.cfi_endproc
+ 319               	.LFE65:
+ 320               	.sizeCFE_PSP_InitProcessorReservedMemory, .-CFE_PSP_InitProcessorReservedMemory
+ 321               	.align2
+ 322               	.globlCFE_PSP_GetKernelTextSegmentInfo
+ 323               	.typeCFE_PSP_GetKernelTextSegmentInfo, @function
+ 324               	CFE_PSP_GetKernelTextSegmentInfo:
+ 325               	.LFB66:
+ 336:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 337:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 338:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /*
+ 339:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** *********************************************************************************
+ 340:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** ** ES BSP kernel memory segment functions
+ 341:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** *********************************************************************************
+ 342:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+ 343:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 344:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /******************************************************************************
+ 345:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Function: CFE_PSP_GetKernelTextSegmentInfo
+ 346:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 347:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Purpose:
+ 348:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    This function returns the start and end address of the kernel text segment.
+ 349:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **     It may not be implemented on all architectures.
+ 350:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 351:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Arguments:
+ 352:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+ 353:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 354:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Return:
+ 355:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+ 356:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+ 357:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** int32 CFE_PSP_GetKernelTextSegmentInfo(void *PtrToKernelSegment, uint32 *SizeOfKernelSegment)
+ 358:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** {
+ 326               	.loc 1 358 0
+ 327               	.cfi_startproc
+ 328 01f4 4FEF FFF4 	lea (-12,%sp),%sp
+ 329               	.cfi_def_cfa_offset 16
+ 359:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    int32 return_code;
+ 360:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    uint32 StartAddress;
+ 361:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    uint32 EndAddress;
+ 362:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+ 363:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    if ( SizeOfKernelSegment == NULL )
+ 330               	.loc 1 363 0
+ 331 01f8 4AAF 0014 	tst.l 20(%sp)
+ 332 01fc 6608      	jne .L31
+ 364:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+ 365:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       return_code = OS_ERROR;
+ 333               	.loc 1 365 0
+ 334 01fe 70FF      	moveq #-1,%d0
+ 335 0200 2F40 0008 	move.l %d0,8(%sp)
+ 336 0204 6028      	jra .L32
+ 337               	.L31:
+ 366:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    }
+ 367:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    else
+ 368:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+ 369:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       /*
+ 370:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       ** Get the kernel start and end
+ 371:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       ** addresses from the BSP, because the 
+ 372:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       ** symbol table does not contain the symbls we need for this
+68K GAS   			page 14
+
+
+ 373:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       */
+ 374:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       StartAddress = (uint32) 0x0;
+ 338               	.loc 1 374 0
+ 339 0206 4297      	clr.l (%sp)
+ 375:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       EndAddress = (uint32) 0x1024;
+ 340               	.loc 1 375 0
+ 341 0208 223C 0000 	move.l #4132,%d1
+ 341      1024 
+ 342 020e 2F41 0004 	move.l %d1,4(%sp)
+ 376:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 377:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       memcpy(PtrToKernelSegment,&StartAddress,sizeof(PtrToKernelSegment));
+ 343               	.loc 1 377 0
+ 344 0212 2017      	move.l (%sp),%d0
+ 345 0214 206F 0010 	move.l 16(%sp),%a0
+ 346 0218 2080      	move.l %d0,(%a0)
+ 378:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       *SizeOfKernelSegment = (uint32) (EndAddress - StartAddress);
+ 347               	.loc 1 378 0
+ 348 021a 2017      	move.l (%sp),%d0
+ 349 021c 222F 0004 	move.l 4(%sp),%d1
+ 350 0220 9280      	sub.l %d0,%d1
+ 351 0222 2001      	move.l %d1,%d0
+ 352 0224 206F 0014 	move.l 20(%sp),%a0
+ 353 0228 2080      	move.l %d0,(%a0)
+ 379:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       
+ 380:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       return_code = OS_SUCCESS;
+ 354               	.loc 1 380 0
+ 355 022a 42AF 0008 	clr.l 8(%sp)
+ 356               	.L32:
+ 381:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    }
+ 382:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+ 383:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    return(return_code);
+ 357               	.loc 1 383 0
+ 358 022e 202F 0008 	move.l 8(%sp),%d0
+ 384:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** }
+ 359               	.loc 1 384 0
+ 360 0232 4FEF 000C 	lea (12,%sp),%sp
+ 361 0236 4E75      	rts
+ 362               	.cfi_endproc
+ 363               	.LFE66:
+ 364               	.sizeCFE_PSP_GetKernelTextSegmentInfo, .-CFE_PSP_GetKernelTextSegmentInfo
+ 365               	.align2
+ 366               	.globlCFE_PSP_GetCFETextSegmentInfo
+ 367               	.typeCFE_PSP_GetCFETextSegmentInfo, @function
+ 368               	CFE_PSP_GetCFETextSegmentInfo:
+ 369               	.LFB67:
+ 385:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 386:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 387:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** /******************************************************************************
+ 388:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Function: CFE_PSP_GetCFETextSegmentInfo
+ 389:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 390:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Purpose:
+ 391:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    This function returns the start and end address of the CFE text segment.
+ 392:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **     It may not be implemented on all architectures.
+ 393:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+ 394:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Arguments:
+ 395:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+ 396:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **
+68K GAS   			page 15
+
+
+ 397:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **  Return:
+ 398:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** **    (none)
+ 399:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** */
+ 400:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** int32 CFE_PSP_GetCFETextSegmentInfo(void *PtrToCFESegment, uint32 *SizeOfCFESegment)
+ 401:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** {
+ 370               	.loc 1 401 0
+ 371               	.cfi_startproc
+ 372 0238 4FEF FFF4 	lea (-12,%sp),%sp
+ 373               	.cfi_def_cfa_offset 16
+ 402:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    int32 return_code;
+ 403:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    uint32 StartAddress;
+ 404:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    uint32 EndAddress;
+ 405:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+ 406:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    if ( SizeOfCFESegment == NULL )
+ 374               	.loc 1 406 0
+ 375 023c 4AAF 0014 	tst.l 20(%sp)
+ 376 0240 6608      	jne .L35
+ 407:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+ 408:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       return_code = OS_ERROR;
+ 377               	.loc 1 408 0
+ 378 0242 70FF      	moveq #-1,%d0
+ 379 0244 2F40 0008 	move.l %d0,8(%sp)
+ 380 0248 6028      	jra .L36
+ 381               	.L35:
+ 409:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    }
+ 410:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    else
+ 411:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    {
+ 412:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       /*
+ 413:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       ** Get the kernel start and end
+ 414:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       ** addresses from the BSP, because the 
+ 415:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       ** symbol table does not contain the symbls we need for this
+ 416:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       */
+ 417:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       StartAddress = (uint32) 0x0;
+ 382               	.loc 1 417 0
+ 383 024a 4297      	clr.l (%sp)
+ 418:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       EndAddress = (uint32) 0x1024;
+ 384               	.loc 1 418 0
+ 385 024c 223C 0000 	move.l #4132,%d1
+ 385      1024 
+ 386 0252 2F41 0004 	move.l %d1,4(%sp)
+ 419:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 420:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       memcpy(PtrToCFESegment,&StartAddress,sizeof(PtrToCFESegment));
+ 387               	.loc 1 420 0
+ 388 0256 2017      	move.l (%sp),%d0
+ 389 0258 206F 0010 	move.l 16(%sp),%a0
+ 390 025c 2080      	move.l %d0,(%a0)
+ 421:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       *SizeOfCFESegment = (uint32) (EndAddress - StartAddress);
+ 391               	.loc 1 421 0
+ 392 025e 2017      	move.l (%sp),%d0
+ 393 0260 222F 0004 	move.l 4(%sp),%d1
+ 394 0264 9280      	sub.l %d0,%d1
+ 395 0266 2001      	move.l %d1,%d0
+ 396 0268 206F 0014 	move.l 20(%sp),%a0
+ 397 026c 2080      	move.l %d0,(%a0)
+ 422:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       
+ 423:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****       return_code = OS_SUCCESS;
+ 398               	.loc 1 423 0
+68K GAS   			page 16
+
+
+ 399 026e 42AF 0008 	clr.l 8(%sp)
+ 400               	.L36:
+ 424:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    }
+ 425:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+ 426:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    return(return_code);
+ 401               	.loc 1 426 0
+ 402 0272 202F 0008 	move.l 8(%sp),%d0
+ 427:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** }
+ 403               	.loc 1 427 0
+ 404 0276 4FEF 000C 	lea (12,%sp),%sp
+ 405 027a 4E75      	rts
+ 406               	.cfi_endproc
+ 407               	.LFE67:
+ 408               	.sizeCFE_PSP_GetCFETextSegmentInfo, .-CFE_PSP_GetCFETextSegmentInfo
+ 409               	.section.rodata
+ 410               	.LC1:
+ 411 002e 6D61 6C6C 	.string"malloc"
+ 411      6F63 00
+ 412               	.LC2:
+ 413 0035 696E 666F 	.string"info"
+ 413      00
+ 414               	.LC3:
+ 415 003a 776B 7370 	.string"wkspace"
+ 415      6163 6500 
+ 416               	.LC4:
+ 417 0042 2D2D 2D2D 	.string"------------------------ Memory Stat Report ----------------------------\n"
+ 417      2D2D 2D2D 
+ 417      2D2D 2D2D 
+ 417      2D2D 2D2D 
+ 417      2D2D 2D2D 
+ 418               	.LC5:
+ 419 008c 2043 616C 	.string" Called from: %s\n"
+ 419      6C65 6420 
+ 419      6672 6F6D 
+ 419      3A20 2573 
+ 419      0A00 
+ 420               	.LC6:
+ 421 009e 2D2D 2D2D 	.string"------------------------ Dumping Malloc Stats: ----------------------------\n"
+ 421      2D2D 2D2D 
+ 421      2D2D 2D2D 
+ 421      2D2D 2D2D 
+ 421      2D2D 2D2D 
+ 422               	.LC7:
+ 423 00eb 2D2D 2D2D 	.string"------------------------ Dumping Wkspace Stats: ----------------------------\n"
+ 423      2D2D 2D2D 
+ 423      2D2D 2D2D 
+ 423      2D2D 2D2D 
+ 423      2D2D 2D2D 
+ 424               	.LC8:
+ 425 0139 2D2D 2D2D 	.string"------------------------ Done ----------------- ----------------------------\n"
+ 425      2D2D 2D2D 
+ 425      2D2D 2D2D 
+ 425      2D2D 2D2D 
+ 425      2D2D 2D2D 
+ 426               	.text
+ 427               	.align2
+ 428               	.globlCFE_PSP_MemReport
+68K GAS   			page 17
+
+
+ 429               	.typeCFE_PSP_MemReport, @function
+ 430               	CFE_PSP_MemReport:
+ 431               	.LFB68:
+ 428:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 429:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 430:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** extern int rtems_shell_main_wkspace_info(int argc,char *argv[]);
+ 431:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** extern int rtems_shell_main_malloc_info( int argc, char *argv[]);
+ 432:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 433:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 434:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** void CFE_PSP_MemReport(char *message)
+ 435:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** {
+ 432               	.loc 1 435 0
+ 433               	.cfi_startproc
+ 434 027c 4FEF FFEC 	lea (-20,%sp),%sp
+ 435               	.cfi_def_cfa_offset 24
+ 436:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** 
+ 437:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    int MemStatus;
+ 438:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    char *malloc_argv[] = {"malloc", "info"};
+ 436               	.loc 1 438 0
+ 437 0280 203C 0000 	move.l #.LC1,%d0
+ 437      0000 
+ 438 0286 2F40 0008 	move.l %d0,8(%sp)
+ 439 028a 203C 0000 	move.l #.LC2,%d0
+ 439      0000 
+ 440 0290 2F40 000C 	move.l %d0,12(%sp)
+ 439:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    char *wkspace_argv[] = {"wkspace", "info"};
+ 441               	.loc 1 439 0
+ 442 0294 2EBC 0000 	move.l #.LC3,(%sp)
+ 442      0000 
+ 443 029a 203C 0000 	move.l #.LC2,%d0
+ 443      0000 
+ 444 02a0 2F40 0004 	move.l %d0,4(%sp)
+ 440:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+ 441:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    OS_printf("------------------------ Memory Stat Report ----------------------------\n");
+ 445               	.loc 1 441 0
+ 446 02a4 4879 0000 	pea .LC4
+ 446      0000 
+ 447               	.cfi_def_cfa_offset 28
+ 448 02aa 4EB9 0000 	jsr OS_printf
+ 448      0000 
+ 449 02b0 588F      	addq.l #4,%sp
+ 450               	.cfi_def_cfa_offset 24
+ 442:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    OS_printf(" Called from: %s\n",message);
+ 451               	.loc 1 442 0
+ 452 02b2 2F2F 0018 	move.l 24(%sp),-(%sp)
+ 453               	.cfi_def_cfa_offset 28
+ 454 02b6 4879 0000 	pea .LC5
+ 454      0000 
+ 455               	.cfi_def_cfa_offset 32
+ 456 02bc 4EB9 0000 	jsr OS_printf
+ 456      0000 
+ 457 02c2 508F      	addq.l #8,%sp
+ 458               	.cfi_def_cfa_offset 24
+ 443:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    OS_printf("------------------------ Dumping Malloc Stats: ----------------------------\n");
+ 459               	.loc 1 443 0
+ 460 02c4 4879 0000 	pea .LC6
+ 460      0000 
+68K GAS   			page 18
+
+
+ 461               	.cfi_def_cfa_offset 28
+ 462 02ca 4EB9 0000 	jsr OS_printf
+ 462      0000 
+ 463 02d0 588F      	addq.l #4,%sp
+ 464               	.cfi_def_cfa_offset 24
+ 444:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    MemStatus = rtems_shell_main_malloc_info(2, malloc_argv);
+ 465               	.loc 1 444 0
+ 466 02d2 200F      	move.l %sp,%d0
+ 467 02d4 5080      	addq.l #8,%d0
+ 468 02d6 2F00      	move.l %d0,-(%sp)
+ 469               	.cfi_def_cfa_offset 28
+ 470 02d8 4878 0002 	pea 2.w
+ 471               	.cfi_def_cfa_offset 32
+ 472 02dc 4EB9 0000 	jsr rtems_shell_main_malloc_info
+ 472      0000 
+ 473 02e2 508F      	addq.l #8,%sp
+ 474               	.cfi_def_cfa_offset 24
+ 475 02e4 2F40 0010 	move.l %d0,16(%sp)
+ 445:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    OS_printf("------------------------ Dumping Wkspace Stats: ----------------------------\n");
+ 476               	.loc 1 445 0
+ 477 02e8 4879 0000 	pea .LC7
+ 477      0000 
+ 478               	.cfi_def_cfa_offset 28
+ 479 02ee 4EB9 0000 	jsr OS_printf
+ 479      0000 
+ 480 02f4 588F      	addq.l #4,%sp
+ 481               	.cfi_def_cfa_offset 24
+ 446:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    MemStatus = rtems_shell_main_wkspace_info(2, wkspace_argv);
+ 482               	.loc 1 446 0
+ 483 02f6 200F      	move.l %sp,%d0
+ 484 02f8 2F00      	move.l %d0,-(%sp)
+ 485               	.cfi_def_cfa_offset 28
+ 486 02fa 4878 0002 	pea 2.w
+ 487               	.cfi_def_cfa_offset 32
+ 488 02fe 4EB9 0000 	jsr rtems_shell_main_wkspace_info
+ 488      0000 
+ 489 0304 508F      	addq.l #8,%sp
+ 490               	.cfi_def_cfa_offset 24
+ 491 0306 2F40 0010 	move.l %d0,16(%sp)
+ 447:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    OS_printf("------------------------ Done ----------------- ----------------------------\n");
+ 492               	.loc 1 447 0
+ 493 030a 4879 0000 	pea .LC8
+ 493      0000 
+ 494               	.cfi_def_cfa_offset 28
+ 495 0310 4EB9 0000 	jsr OS_printf
+ 495      0000 
+ 496 0316 588F      	addq.l #4,%sp
+ 497               	.cfi_def_cfa_offset 24
+ 448:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c ****    
+ 449:/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c **** }
+ 498               	.loc 1 449 0
+ 499 0318 4E71      	nop
+ 500 031a 4FEF 0014 	lea (20,%sp),%sp
+ 501 031e 4E75      	rts
+ 502               	.cfi_endproc
+ 503               	.LFE68:
+ 504               	.sizeCFE_PSP_MemReport, .-CFE_PSP_MemReport
+68K GAS   			page 19
+
+
+ 505               	.Letext0:
+ 506               	.file 2 "/home/simulink/development/rtems/5/m68k-rtems5/include/machine/_default_types.h"
+ 507               	.file 3 "/home/simulink/development/rtems/5/m68k-rtems5/include/machine/_types.h"
+ 508               	.file 4 "/home/simulink/development/rtems/5/m68k-rtems5/include/sys/lock.h"
+ 509               	.file 5 "/home/simulink/development/rtems/5/m68k-rtems5/include/sys/_types.h"
+ 510               	.file 6 "/home/simulink/development/rtems/5/lib/gcc/m68k-rtems5/7.3.0/include/stddef.h"
+ 511               	.file 7 "/home/simulink/development/rtems/5/m68k-rtems5/include/sys/reent.h"
+ 512               	.file 8 "/home/simulink/cFS_FreeRTOS_seL4/osal/src/os/inc/common_types.h"
+ 513               	.file 9 "/home/simulink/development/rtems/5/m68k-rtems5/include/stdlib.h"
+ 514               	.file 10 "/home/simulink/development/rtems/5/m68k-rtems5/include/time.h"
+ 515               	.file 11 "/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.h"
+ 516               	.section.debug_info,"",@progbits
+ 517               	.Ldebug_info0:
+ 518 0000 0000 0DD9 	.long0xdd9
+ 519 0004 0004      	.word0x4
+ 520 0006 0000 0000 	.long.Ldebug_abbrev0
+ 521 000a 04        	.byte0x4
+ 522 000b 01        	.uleb128 0x1
+ 523 000c 0000 0000 	.long.LASF189
+ 524 0010 0C        	.byte0xc
+ 525 0011 0000 0000 	.long.LASF190
+ 526 0015 0000 0000 	.long.LASF191
+ 527 0019 0000 0000 	.long.Ltext0
+ 528 001d 0000 0320 	.long.Letext0-.Ltext0
+ 529 0021 0000 0000 	.long.Ldebug_line0
+ 530 0025 02        	.uleb128 0x2
+ 531 0026 01        	.byte0x1
+ 532 0027 06        	.byte0x6
+ 533 0028 0000 0000 	.long.LASF0
+ 534 002c 02        	.uleb128 0x2
+ 535 002d 01        	.byte0x1
+ 536 002e 08        	.byte0x8
+ 537 002f 0000 0000 	.long.LASF1
+ 538 0033 02        	.uleb128 0x2
+ 539 0034 02        	.byte0x2
+ 540 0035 05        	.byte0x5
+ 541 0036 0000 0000 	.long.LASF2
+ 542 003a 02        	.uleb128 0x2
+ 543 003b 02        	.byte0x2
+ 544 003c 07        	.byte0x7
+ 545 003d 0000 0000 	.long.LASF3
+ 546 0041 02        	.uleb128 0x2
+ 547 0042 04        	.byte0x4
+ 548 0043 05        	.byte0x5
+ 549 0044 0000 0000 	.long.LASF4
+ 550 0048 02        	.uleb128 0x2
+ 551 0049 04        	.byte0x4
+ 552 004a 07        	.byte0x7
+ 553 004b 0000 0000 	.long.LASF5
+ 554 004f 03        	.uleb128 0x3
+ 555 0050 0000 0000 	.long.LASF9
+ 556 0054 02        	.byte0x2
+ 557 0055 67        	.byte0x67
+ 558 0056 0000 005A 	.long0x5a
+ 559 005a 02        	.uleb128 0x2
+ 560 005b 08        	.byte0x8
+ 561 005c 05        	.byte0x5
+68K GAS   			page 20
+
+
+ 562 005d 0000 0000 	.long.LASF6
+ 563 0061 02        	.uleb128 0x2
+ 564 0062 08        	.byte0x8
+ 565 0063 07        	.byte0x7
+ 566 0064 0000 0000 	.long.LASF7
+ 567 0068 02        	.uleb128 0x2
+ 568 0069 08        	.byte0x8
+ 569 006a 04        	.byte0x4
+ 570 006b 0000 0000 	.long.LASF8
+ 571 006f 03        	.uleb128 0x3
+ 572 0070 0000 0000 	.long.LASF10
+ 573 0074 03        	.byte0x3
+ 574 0075 10        	.byte0x10
+ 575 0076 0000 004F 	.long0x4f
+ 576 007a 03        	.uleb128 0x3
+ 577 007b 0000 0000 	.long.LASF11
+ 578 007f 03        	.byte0x3
+ 579 0080 16        	.byte0x16
+ 580 0081 0000 006F 	.long0x6f
+ 581 0085 04        	.uleb128 0x4
+ 582 0086 04        	.byte0x4
+ 583 0087 05        	.byte0x5
+ 584 0088 696E 7400 	.string"int"
+ 585 008c 05        	.uleb128 0x5
+ 586 008d 0000 0000 	.long.LASF15
+ 587 0091 08        	.byte0x8
+ 588 0092 04        	.byte0x4
+ 589 0093 28        	.byte0x28
+ 590 0094 0000 00B1 	.long0xb1
+ 591 0098 06        	.uleb128 0x6
+ 592 0099 0000 0000 	.long.LASF12
+ 593 009d 04        	.byte0x4
+ 594 009e 29        	.byte0x29
+ 595 009f 0000 00B1 	.long0xb1
+ 596 00a3 00        	.byte0
+ 597 00a4 06        	.uleb128 0x6
+ 598 00a5 0000 0000 	.long.LASF13
+ 599 00a9 04        	.byte0x4
+ 600 00aa 2A        	.byte0x2a
+ 601 00ab 0000 00B1 	.long0xb1
+ 602 00af 04        	.byte0x4
+ 603 00b0 00        	.byte0
+ 604 00b1 02        	.uleb128 0x2
+ 605 00b2 04        	.byte0x4
+ 606 00b3 07        	.byte0x7
+ 607 00b4 0000 0000 	.long.LASF14
+ 608 00b8 05        	.uleb128 0x5
+ 609 00b9 0000 0000 	.long.LASF16
+ 610 00bd 14        	.byte0x14
+ 611 00be 04        	.byte0x4
+ 612 00bf 2D        	.byte0x2d
+ 613 00c0 0000 00F5 	.long0xf5
+ 614 00c4 06        	.uleb128 0x6
+ 615 00c5 0000 0000 	.long.LASF17
+ 616 00c9 04        	.byte0x4
+ 617 00ca 2E        	.byte0x2e
+ 618 00cb 0000 008C 	.long0x8c
+68K GAS   			page 21
+
+
+ 619 00cf 00        	.byte0
+ 620 00d0 06        	.uleb128 0x6
+ 621 00d1 0000 0000 	.long.LASF18
+ 622 00d5 04        	.byte0x4
+ 623 00d6 2F        	.byte0x2f
+ 624 00d7 0000 00FA 	.long0xfa
+ 625 00db 08        	.byte0x8
+ 626 00dc 06        	.uleb128 0x6
+ 627 00dd 0000 0000 	.long.LASF19
+ 628 00e1 04        	.byte0x4
+ 629 00e2 30        	.byte0x30
+ 630 00e3 0000 0105 	.long0x105
+ 631 00e7 0C        	.byte0xc
+ 632 00e8 06        	.uleb128 0x6
+ 633 00e9 0000 0000 	.long.LASF20
+ 634 00ed 04        	.byte0x4
+ 635 00ee 31        	.byte0x31
+ 636 00ef 0000 010B 	.long0x10b
+ 637 00f3 10        	.byte0x10
+ 638 00f4 00        	.byte0
+ 639 00f5 07        	.uleb128 0x7
+ 640 00f6 0000 0000 	.long.LASF21
+ 641 00fa 08        	.uleb128 0x8
+ 642 00fb 04        	.byte0x4
+ 643 00fc 0000 00F5 	.long0xf5
+ 644 0100 07        	.uleb128 0x7
+ 645 0101 0000 0000 	.long.LASF22
+ 646 0105 08        	.uleb128 0x8
+ 647 0106 04        	.byte0x4
+ 648 0107 0000 0100 	.long0x100
+ 649 010b 08        	.uleb128 0x8
+ 650 010c 04        	.byte0x4
+ 651 010d 0000 0118 	.long0x118
+ 652 0111 02        	.uleb128 0x2
+ 653 0112 01        	.byte0x1
+ 654 0113 06        	.byte0x6
+ 655 0114 0000 0000 	.long.LASF23
+ 656 0118 09        	.uleb128 0x9
+ 657 0119 0000 0111 	.long0x111
+ 658 011d 05        	.uleb128 0x5
+ 659 011e 0000 0000 	.long.LASF24
+ 660 0122 14        	.byte0x14
+ 661 0123 04        	.byte0x4
+ 662 0124 34        	.byte0x34
+ 663 0125 0000 0136 	.long0x136
+ 664 0129 06        	.uleb128 0x6
+ 665 012a 0000 0000 	.long.LASF25
+ 666 012e 04        	.byte0x4
+ 667 012f 35        	.byte0x35
+ 668 0130 0000 00B8 	.long0xb8
+ 669 0134 00        	.byte0
+ 670 0135 00        	.byte0
+ 671 0136 05        	.uleb128 0x5
+ 672 0137 0000 0000 	.long.LASF26
+ 673 013b 18        	.byte0x18
+ 674 013c 04        	.byte0x4
+ 675 013d 38        	.byte0x38
+68K GAS   			page 22
+
+
+ 676 013e 0000 015B 	.long0x15b
+ 677 0142 06        	.uleb128 0x6
+ 678 0143 0000 0000 	.long.LASF27
+ 679 0147 04        	.byte0x4
+ 680 0148 39        	.byte0x39
+ 681 0149 0000 011D 	.long0x11d
+ 682 014d 00        	.byte0
+ 683 014e 06        	.uleb128 0x6
+ 684 014f 0000 0000 	.long.LASF28
+ 685 0153 04        	.byte0x4
+ 686 0154 3A        	.byte0x3a
+ 687 0155 0000 00B1 	.long0xb1
+ 688 0159 14        	.byte0x14
+ 689 015a 00        	.byte0
+ 690 015b 0A        	.uleb128 0xa
+ 691 015c 0000 0000 	.long.LASF29
+ 692 0160 04        	.byte0x4
+ 693 0161 0171      	.word0x171
+ 694 0163 0000 0136 	.long0x136
+ 695 0167 03        	.uleb128 0x3
+ 696 0168 0000 0000 	.long.LASF30
+ 697 016c 05        	.byte0x5
+ 698 016d 91        	.byte0x91
+ 699 016e 0000 0041 	.long0x41
+ 700 0172 0A        	.uleb128 0xa
+ 701 0173 0000 0000 	.long.LASF31
+ 702 0177 06        	.byte0x6
+ 703 0178 0165      	.word0x165
+ 704 017a 0000 00B1 	.long0xb1
+ 705 017e 0B        	.uleb128 0xb
+ 706 017f 04        	.byte0x4
+ 707 0180 05        	.byte0x5
+ 708 0181 A6        	.byte0xa6
+ 709 0182 0000 019D 	.long0x19d
+ 710 0186 0C        	.uleb128 0xc
+ 711 0187 0000 0000 	.long.LASF32
+ 712 018b 05        	.byte0x5
+ 713 018c A8        	.byte0xa8
+ 714 018d 0000 0172 	.long0x172
+ 715 0191 0C        	.uleb128 0xc
+ 716 0192 0000 0000 	.long.LASF33
+ 717 0196 05        	.byte0x5
+ 718 0197 A9        	.byte0xa9
+ 719 0198 0000 019D 	.long0x19d
+ 720 019c 00        	.byte0
+ 721 019d 0D        	.uleb128 0xd
+ 722 019e 0000 002C 	.long0x2c
+ 723 01a2 0000 01AD 	.long0x1ad
+ 724 01a6 0E        	.uleb128 0xe
+ 725 01a7 0000 0048 	.long0x48
+ 726 01ab 03        	.byte0x3
+ 727 01ac 00        	.byte0
+ 728 01ad 0F        	.uleb128 0xf
+ 729 01ae 08        	.byte0x8
+ 730 01af 05        	.byte0x5
+ 731 01b0 A3        	.byte0xa3
+ 732 01b1 0000 01CE 	.long0x1ce
+68K GAS   			page 23
+
+
+ 733 01b5 06        	.uleb128 0x6
+ 734 01b6 0000 0000 	.long.LASF34
+ 735 01ba 05        	.byte0x5
+ 736 01bb A5        	.byte0xa5
+ 737 01bc 0000 0085 	.long0x85
+ 738 01c0 00        	.byte0
+ 739 01c1 06        	.uleb128 0x6
+ 740 01c2 0000 0000 	.long.LASF35
+ 741 01c6 05        	.byte0x5
+ 742 01c7 AA        	.byte0xaa
+ 743 01c8 0000 017E 	.long0x17e
+ 744 01cc 04        	.byte0x4
+ 745 01cd 00        	.byte0
+ 746 01ce 03        	.uleb128 0x3
+ 747 01cf 0000 0000 	.long.LASF36
+ 748 01d3 05        	.byte0x5
+ 749 01d4 AB        	.byte0xab
+ 750 01d5 0000 01AD 	.long0x1ad
+ 751 01d9 03        	.uleb128 0x3
+ 752 01da 0000 0000 	.long.LASF37
+ 753 01de 05        	.byte0x5
+ 754 01df AF        	.byte0xaf
+ 755 01e0 0000 015B 	.long0x15b
+ 756 01e4 10        	.uleb128 0x10
+ 757 01e5 04        	.byte0x4
+ 758 01e6 03        	.uleb128 0x3
+ 759 01e7 0000 0000 	.long.LASF38
+ 760 01eb 07        	.byte0x7
+ 761 01ec 16        	.byte0x16
+ 762 01ed 0000 0048 	.long0x48
+ 763 01f1 05        	.uleb128 0x5
+ 764 01f2 0000 0000 	.long.LASF39
+ 765 01f6 18        	.byte0x18
+ 766 01f7 07        	.byte0x7
+ 767 01f8 2F        	.byte0x2f
+ 768 01f9 0000 0244 	.long0x244
+ 769 01fd 06        	.uleb128 0x6
+ 770 01fe 0000 0000 	.long.LASF40
+ 771 0202 07        	.byte0x7
+ 772 0203 31        	.byte0x31
+ 773 0204 0000 0244 	.long0x244
+ 774 0208 00        	.byte0
+ 775 0209 11        	.uleb128 0x11
+ 776 020a 5F6B 00   	.string"_k"
+ 777 020d 07        	.byte0x7
+ 778 020e 32        	.byte0x32
+ 779 020f 0000 0085 	.long0x85
+ 780 0213 04        	.byte0x4
+ 781 0214 06        	.uleb128 0x6
+ 782 0215 0000 0000 	.long.LASF41
+ 783 0219 07        	.byte0x7
+ 784 021a 32        	.byte0x32
+ 785 021b 0000 0085 	.long0x85
+ 786 021f 08        	.byte0x8
+ 787 0220 06        	.uleb128 0x6
+ 788 0221 0000 0000 	.long.LASF42
+ 789 0225 07        	.byte0x7
+68K GAS   			page 24
+
+
+ 790 0226 32        	.byte0x32
+ 791 0227 0000 0085 	.long0x85
+ 792 022b 0C        	.byte0xc
+ 793 022c 06        	.uleb128 0x6
+ 794 022d 0000 0000 	.long.LASF43
+ 795 0231 07        	.byte0x7
+ 796 0232 32        	.byte0x32
+ 797 0233 0000 0085 	.long0x85
+ 798 0237 10        	.byte0x10
+ 799 0238 11        	.uleb128 0x11
+ 800 0239 5F78 00   	.string"_x"
+ 801 023c 07        	.byte0x7
+ 802 023d 33        	.byte0x33
+ 803 023e 0000 024A 	.long0x24a
+ 804 0242 14        	.byte0x14
+ 805 0243 00        	.byte0
+ 806 0244 08        	.uleb128 0x8
+ 807 0245 04        	.byte0x4
+ 808 0246 0000 01F1 	.long0x1f1
+ 809 024a 0D        	.uleb128 0xd
+ 810 024b 0000 01E6 	.long0x1e6
+ 811 024f 0000 025A 	.long0x25a
+ 812 0253 0E        	.uleb128 0xe
+ 813 0254 0000 0048 	.long0x48
+ 814 0258 00        	.byte0
+ 815 0259 00        	.byte0
+ 816 025a 05        	.uleb128 0x5
+ 817 025b 0000 0000 	.long.LASF44
+ 818 025f 24        	.byte0x24
+ 819 0260 07        	.byte0x7
+ 820 0261 37        	.byte0x37
+ 821 0262 0000 02D3 	.long0x2d3
+ 822 0266 06        	.uleb128 0x6
+ 823 0267 0000 0000 	.long.LASF45
+ 824 026b 07        	.byte0x7
+ 825 026c 39        	.byte0x39
+ 826 026d 0000 0085 	.long0x85
+ 827 0271 00        	.byte0
+ 828 0272 06        	.uleb128 0x6
+ 829 0273 0000 0000 	.long.LASF46
+ 830 0277 07        	.byte0x7
+ 831 0278 3A        	.byte0x3a
+ 832 0279 0000 0085 	.long0x85
+ 833 027d 04        	.byte0x4
+ 834 027e 06        	.uleb128 0x6
+ 835 027f 0000 0000 	.long.LASF47
+ 836 0283 07        	.byte0x7
+ 837 0284 3B        	.byte0x3b
+ 838 0285 0000 0085 	.long0x85
+ 839 0289 08        	.byte0x8
+ 840 028a 06        	.uleb128 0x6
+ 841 028b 0000 0000 	.long.LASF48
+ 842 028f 07        	.byte0x7
+ 843 0290 3C        	.byte0x3c
+ 844 0291 0000 0085 	.long0x85
+ 845 0295 0C        	.byte0xc
+ 846 0296 06        	.uleb128 0x6
+68K GAS   			page 25
+
+
+ 847 0297 0000 0000 	.long.LASF49
+ 848 029b 07        	.byte0x7
+ 849 029c 3D        	.byte0x3d
+ 850 029d 0000 0085 	.long0x85
+ 851 02a1 10        	.byte0x10
+ 852 02a2 06        	.uleb128 0x6
+ 853 02a3 0000 0000 	.long.LASF50
+ 854 02a7 07        	.byte0x7
+ 855 02a8 3E        	.byte0x3e
+ 856 02a9 0000 0085 	.long0x85
+ 857 02ad 14        	.byte0x14
+ 858 02ae 06        	.uleb128 0x6
+ 859 02af 0000 0000 	.long.LASF51
+ 860 02b3 07        	.byte0x7
+ 861 02b4 3F        	.byte0x3f
+ 862 02b5 0000 0085 	.long0x85
+ 863 02b9 18        	.byte0x18
+ 864 02ba 06        	.uleb128 0x6
+ 865 02bb 0000 0000 	.long.LASF52
+ 866 02bf 07        	.byte0x7
+ 867 02c0 40        	.byte0x40
+ 868 02c1 0000 0085 	.long0x85
+ 869 02c5 1C        	.byte0x1c
+ 870 02c6 06        	.uleb128 0x6
+ 871 02c7 0000 0000 	.long.LASF53
+ 872 02cb 07        	.byte0x7
+ 873 02cc 41        	.byte0x41
+ 874 02cd 0000 0085 	.long0x85
+ 875 02d1 20        	.byte0x20
+ 876 02d2 00        	.byte0
+ 877 02d3 12        	.uleb128 0x12
+ 878 02d4 0000 0000 	.long.LASF54
+ 879 02d8 0108      	.word0x108
+ 880 02da 07        	.byte0x7
+ 881 02db 4A        	.byte0x4a
+ 882 02dc 0000 0313 	.long0x313
+ 883 02e0 06        	.uleb128 0x6
+ 884 02e1 0000 0000 	.long.LASF55
+ 885 02e5 07        	.byte0x7
+ 886 02e6 4B        	.byte0x4b
+ 887 02e7 0000 0313 	.long0x313
+ 888 02eb 00        	.byte0
+ 889 02ec 06        	.uleb128 0x6
+ 890 02ed 0000 0000 	.long.LASF56
+ 891 02f1 07        	.byte0x7
+ 892 02f2 4C        	.byte0x4c
+ 893 02f3 0000 0313 	.long0x313
+ 894 02f7 80        	.byte0x80
+ 895 02f8 13        	.uleb128 0x13
+ 896 02f9 0000 0000 	.long.LASF57
+ 897 02fd 07        	.byte0x7
+ 898 02fe 4E        	.byte0x4e
+ 899 02ff 0000 01E6 	.long0x1e6
+ 900 0303 0100      	.word0x100
+ 901 0305 13        	.uleb128 0x13
+ 902 0306 0000 0000 	.long.LASF58
+ 903 030a 07        	.byte0x7
+68K GAS   			page 26
+
+
+ 904 030b 51        	.byte0x51
+ 905 030c 0000 01E6 	.long0x1e6
+ 906 0310 0104      	.word0x104
+ 907 0312 00        	.byte0
+ 908 0313 0D        	.uleb128 0xd
+ 909 0314 0000 01E4 	.long0x1e4
+ 910 0318 0000 0323 	.long0x323
+ 911 031c 0E        	.uleb128 0xe
+ 912 031d 0000 0048 	.long0x48
+ 913 0321 1F        	.byte0x1f
+ 914 0322 00        	.byte0
+ 915 0323 12        	.uleb128 0x12
+ 916 0324 0000 0000 	.long.LASF59
+ 917 0328 0190      	.word0x190
+ 918 032a 07        	.byte0x7
+ 919 032b 5D        	.byte0x5d
+ 920 032c 0000 0361 	.long0x361
+ 921 0330 06        	.uleb128 0x6
+ 922 0331 0000 0000 	.long.LASF40
+ 923 0335 07        	.byte0x7
+ 924 0336 5E        	.byte0x5e
+ 925 0337 0000 0361 	.long0x361
+ 926 033b 00        	.byte0
+ 927 033c 06        	.uleb128 0x6
+ 928 033d 0000 0000 	.long.LASF60
+ 929 0341 07        	.byte0x7
+ 930 0342 5F        	.byte0x5f
+ 931 0343 0000 0085 	.long0x85
+ 932 0347 04        	.byte0x4
+ 933 0348 06        	.uleb128 0x6
+ 934 0349 0000 0000 	.long.LASF61
+ 935 034d 07        	.byte0x7
+ 936 034e 61        	.byte0x61
+ 937 034f 0000 0367 	.long0x367
+ 938 0353 08        	.byte0x8
+ 939 0354 06        	.uleb128 0x6
+ 940 0355 0000 0000 	.long.LASF54
+ 941 0359 07        	.byte0x7
+ 942 035a 62        	.byte0x62
+ 943 035b 0000 02D3 	.long0x2d3
+ 944 035f 88        	.byte0x88
+ 945 0360 00        	.byte0
+ 946 0361 08        	.uleb128 0x8
+ 947 0362 04        	.byte0x4
+ 948 0363 0000 0323 	.long0x323
+ 949 0367 0D        	.uleb128 0xd
+ 950 0368 0000 0377 	.long0x377
+ 951 036c 0000 0377 	.long0x377
+ 952 0370 0E        	.uleb128 0xe
+ 953 0371 0000 0048 	.long0x48
+ 954 0375 1F        	.byte0x1f
+ 955 0376 00        	.byte0
+ 956 0377 08        	.uleb128 0x8
+ 957 0378 04        	.byte0x4
+ 958 0379 0000 037D 	.long0x37d
+ 959 037d 14        	.uleb128 0x14
+ 960 037e 05        	.uleb128 0x5
+68K GAS   			page 27
+
+
+ 961 037f 0000 0000 	.long.LASF62
+ 962 0383 08        	.byte0x8
+ 963 0384 07        	.byte0x7
+ 964 0385 75        	.byte0x75
+ 965 0386 0000 03A3 	.long0x3a3
+ 966 038a 06        	.uleb128 0x6
+ 967 038b 0000 0000 	.long.LASF63
+ 968 038f 07        	.byte0x7
+ 969 0390 76        	.byte0x76
+ 970 0391 0000 03A3 	.long0x3a3
+ 971 0395 00        	.byte0
+ 972 0396 06        	.uleb128 0x6
+ 973 0397 0000 0000 	.long.LASF64
+ 974 039b 07        	.byte0x7
+ 975 039c 77        	.byte0x77
+ 976 039d 0000 0085 	.long0x85
+ 977 03a1 04        	.byte0x4
+ 978 03a2 00        	.byte0
+ 979 03a3 08        	.uleb128 0x8
+ 980 03a4 04        	.byte0x4
+ 981 03a5 0000 002C 	.long0x2c
+ 982 03a9 05        	.uleb128 0x5
+ 983 03aa 0000 0000 	.long.LASF65
+ 984 03ae 80        	.byte0x80
+ 985 03af 07        	.byte0x7
+ 986 03b0 B5        	.byte0xb5
+ 987 03b1 0000 04D3 	.long0x4d3
+ 988 03b5 11        	.uleb128 0x11
+ 989 03b6 5F70 00   	.string"_p"
+ 990 03b9 07        	.byte0x7
+ 991 03ba B6        	.byte0xb6
+ 992 03bb 0000 03A3 	.long0x3a3
+ 993 03bf 00        	.byte0
+ 994 03c0 11        	.uleb128 0x11
+ 995 03c1 5F72 00   	.string"_r"
+ 996 03c4 07        	.byte0x7
+ 997 03c5 B7        	.byte0xb7
+ 998 03c6 0000 0085 	.long0x85
+ 999 03ca 04        	.byte0x4
+ 1000 03cb 11        	.uleb128 0x11
+ 1001 03cc 5F77 00   	.string"_w"
+ 1002 03cf 07        	.byte0x7
+ 1003 03d0 B8        	.byte0xb8
+ 1004 03d1 0000 0085 	.long0x85
+ 1005 03d5 08        	.byte0x8
+ 1006 03d6 06        	.uleb128 0x6
+ 1007 03d7 0000 0000 	.long.LASF66
+ 1008 03db 07        	.byte0x7
+ 1009 03dc B9        	.byte0xb9
+ 1010 03dd 0000 0033 	.long0x33
+ 1011 03e1 0C        	.byte0xc
+ 1012 03e2 06        	.uleb128 0x6
+ 1013 03e3 0000 0000 	.long.LASF67
+ 1014 03e7 07        	.byte0x7
+ 1015 03e8 BA        	.byte0xba
+ 1016 03e9 0000 0033 	.long0x33
+ 1017 03ed 0E        	.byte0xe
+68K GAS   			page 28
+
+
+ 1018 03ee 11        	.uleb128 0x11
+ 1019 03ef 5F62 6600 	.string"_bf"
+ 1020 03f3 07        	.byte0x7
+ 1021 03f4 BB        	.byte0xbb
+ 1022 03f5 0000 037E 	.long0x37e
+ 1023 03f9 10        	.byte0x10
+ 1024 03fa 06        	.uleb128 0x6
+ 1025 03fb 0000 0000 	.long.LASF68
+ 1026 03ff 07        	.byte0x7
+ 1027 0400 BC        	.byte0xbc
+ 1028 0401 0000 0085 	.long0x85
+ 1029 0405 18        	.byte0x18
+ 1030 0406 06        	.uleb128 0x6
+ 1031 0407 0000 0000 	.long.LASF69
+ 1032 040b 07        	.byte0x7
+ 1033 040c C3        	.byte0xc3
+ 1034 040d 0000 01E4 	.long0x1e4
+ 1035 0411 1C        	.byte0x1c
+ 1036 0412 06        	.uleb128 0x6
+ 1037 0413 0000 0000 	.long.LASF70
+ 1038 0417 07        	.byte0x7
+ 1039 0418 C5        	.byte0xc5
+ 1040 0419 0000 060A 	.long0x60a
+ 1041 041d 20        	.byte0x20
+ 1042 041e 06        	.uleb128 0x6
+ 1043 041f 0000 0000 	.long.LASF71
+ 1044 0423 07        	.byte0x7
+ 1045 0424 C7        	.byte0xc7
+ 1046 0425 0000 062E 	.long0x62e
+ 1047 0429 24        	.byte0x24
+ 1048 042a 06        	.uleb128 0x6
+ 1049 042b 0000 0000 	.long.LASF72
+ 1050 042f 07        	.byte0x7
+ 1051 0430 CA        	.byte0xca
+ 1052 0431 0000 0652 	.long0x652
+ 1053 0435 28        	.byte0x28
+ 1054 0436 06        	.uleb128 0x6
+ 1055 0437 0000 0000 	.long.LASF73
+ 1056 043b 07        	.byte0x7
+ 1057 043c CB        	.byte0xcb
+ 1058 043d 0000 066C 	.long0x66c
+ 1059 0441 2C        	.byte0x2c
+ 1060 0442 11        	.uleb128 0x11
+ 1061 0443 5F75 6200 	.string"_ub"
+ 1062 0447 07        	.byte0x7
+ 1063 0448 CE        	.byte0xce
+ 1064 0449 0000 037E 	.long0x37e
+ 1065 044d 30        	.byte0x30
+ 1066 044e 11        	.uleb128 0x11
+ 1067 044f 5F75 7000 	.string"_up"
+ 1068 0453 07        	.byte0x7
+ 1069 0454 CF        	.byte0xcf
+ 1070 0455 0000 03A3 	.long0x3a3
+ 1071 0459 38        	.byte0x38
+ 1072 045a 11        	.uleb128 0x11
+ 1073 045b 5F75 7200 	.string"_ur"
+ 1074 045f 07        	.byte0x7
+68K GAS   			page 29
+
+
+ 1075 0460 D0        	.byte0xd0
+ 1076 0461 0000 0085 	.long0x85
+ 1077 0465 3C        	.byte0x3c
+ 1078 0466 06        	.uleb128 0x6
+ 1079 0467 0000 0000 	.long.LASF74
+ 1080 046b 07        	.byte0x7
+ 1081 046c D3        	.byte0xd3
+ 1082 046d 0000 0672 	.long0x672
+ 1083 0471 40        	.byte0x40
+ 1084 0472 06        	.uleb128 0x6
+ 1085 0473 0000 0000 	.long.LASF75
+ 1086 0477 07        	.byte0x7
+ 1087 0478 D4        	.byte0xd4
+ 1088 0479 0000 0682 	.long0x682
+ 1089 047d 43        	.byte0x43
+ 1090 047e 11        	.uleb128 0x11
+ 1091 047f 5F6C 6200 	.string"_lb"
+ 1092 0483 07        	.byte0x7
+ 1093 0484 D7        	.byte0xd7
+ 1094 0485 0000 037E 	.long0x37e
+ 1095 0489 44        	.byte0x44
+ 1096 048a 06        	.uleb128 0x6
+ 1097 048b 0000 0000 	.long.LASF76
+ 1098 048f 07        	.byte0x7
+ 1099 0490 DA        	.byte0xda
+ 1100 0491 0000 0085 	.long0x85
+ 1101 0495 4C        	.byte0x4c
+ 1102 0496 06        	.uleb128 0x6
+ 1103 0497 0000 0000 	.long.LASF77
+ 1104 049b 07        	.byte0x7
+ 1105 049c DB        	.byte0xdb
+ 1106 049d 0000 006F 	.long0x6f
+ 1107 04a1 50        	.byte0x50
+ 1108 04a2 06        	.uleb128 0x6
+ 1109 04a3 0000 0000 	.long.LASF78
+ 1110 04a7 07        	.byte0x7
+ 1111 04a8 DE        	.byte0xde
+ 1112 04a9 0000 04F1 	.long0x4f1
+ 1113 04ad 58        	.byte0x58
+ 1114 04ae 06        	.uleb128 0x6
+ 1115 04af 0000 0000 	.long.LASF79
+ 1116 04b3 07        	.byte0x7
+ 1117 04b4 E2        	.byte0xe2
+ 1118 04b5 0000 01D9 	.long0x1d9
+ 1119 04b9 5C        	.byte0x5c
+ 1120 04ba 06        	.uleb128 0x6
+ 1121 04bb 0000 0000 	.long.LASF80
+ 1122 04bf 07        	.byte0x7
+ 1123 04c0 E4        	.byte0xe4
+ 1124 04c1 0000 01CE 	.long0x1ce
+ 1125 04c5 74        	.byte0x74
+ 1126 04c6 06        	.uleb128 0x6
+ 1127 04c7 0000 0000 	.long.LASF81
+ 1128 04cb 07        	.byte0x7
+ 1129 04cc E5        	.byte0xe5
+ 1130 04cd 0000 0085 	.long0x85
+ 1131 04d1 7C        	.byte0x7c
+68K GAS   			page 30
+
+
+ 1132 04d2 00        	.byte0
+ 1133 04d3 15        	.uleb128 0x15
+ 1134 04d4 0000 0167 	.long0x167
+ 1135 04d8 0000 04F1 	.long0x4f1
+ 1136 04dc 16        	.uleb128 0x16
+ 1137 04dd 0000 04F1 	.long0x4f1
+ 1138 04e1 16        	.uleb128 0x16
+ 1139 04e2 0000 01E4 	.long0x1e4
+ 1140 04e6 16        	.uleb128 0x16
+ 1141 04e7 0000 0604 	.long0x604
+ 1142 04eb 16        	.uleb128 0x16
+ 1143 04ec 0000 0085 	.long0x85
+ 1144 04f0 00        	.byte0
+ 1145 04f1 08        	.uleb128 0x8
+ 1146 04f2 04        	.byte0x4
+ 1147 04f3 0000 04FC 	.long0x4fc
+ 1148 04f7 09        	.uleb128 0x9
+ 1149 04f8 0000 04F1 	.long0x4f1
+ 1150 04fc 17        	.uleb128 0x17
+ 1151 04fd 0000 0000 	.long.LASF82
+ 1152 0501 0158      	.word0x158
+ 1153 0503 07        	.byte0x7
+ 1154 0504 0239      	.word0x239
+ 1155 0506 0000 0604 	.long0x604
+ 1156 050a 18        	.uleb128 0x18
+ 1157 050b 0000 0000 	.long.LASF83
+ 1158 050f 07        	.byte0x7
+ 1159 0510 023B      	.word0x23b
+ 1160 0512 0000 0085 	.long0x85
+ 1161 0516 00        	.byte0
+ 1162 0517 18        	.uleb128 0x18
+ 1163 0518 0000 0000 	.long.LASF84
+ 1164 051c 07        	.byte0x7
+ 1165 051d 0240      	.word0x240
+ 1166 051f 0000 06D9 	.long0x6d9
+ 1167 0523 04        	.byte0x4
+ 1168 0524 18        	.uleb128 0x18
+ 1169 0525 0000 0000 	.long.LASF85
+ 1170 0529 07        	.byte0x7
+ 1171 052a 0240      	.word0x240
+ 1172 052c 0000 06D9 	.long0x6d9
+ 1173 0530 08        	.byte0x8
+ 1174 0531 18        	.uleb128 0x18
+ 1175 0532 0000 0000 	.long.LASF86
+ 1176 0536 07        	.byte0x7
+ 1177 0537 0240      	.word0x240
+ 1178 0539 0000 06D9 	.long0x6d9
+ 1179 053d 0C        	.byte0xc
+ 1180 053e 18        	.uleb128 0x18
+ 1181 053f 0000 0000 	.long.LASF87
+ 1182 0543 07        	.byte0x7
+ 1183 0544 0242      	.word0x242
+ 1184 0546 0000 0085 	.long0x85
+ 1185 054a 10        	.byte0x10
+ 1186 054b 18        	.uleb128 0x18
+ 1187 054c 0000 0000 	.long.LASF88
+ 1188 0550 07        	.byte0x7
+68K GAS   			page 31
+
+
+ 1189 0551 0243      	.word0x243
+ 1190 0553 0000 08BB 	.long0x8bb
+ 1191 0557 14        	.byte0x14
+ 1192 0558 18        	.uleb128 0x18
+ 1193 0559 0000 0000 	.long.LASF89
+ 1194 055d 07        	.byte0x7
+ 1195 055e 0246      	.word0x246
+ 1196 0560 0000 0085 	.long0x85
+ 1197 0564 30        	.byte0x30
+ 1198 0565 18        	.uleb128 0x18
+ 1199 0566 0000 0000 	.long.LASF90
+ 1200 056a 07        	.byte0x7
+ 1201 056b 0247      	.word0x247
+ 1202 056d 0000 08D0 	.long0x8d0
+ 1203 0571 34        	.byte0x34
+ 1204 0572 18        	.uleb128 0x18
+ 1205 0573 0000 0000 	.long.LASF91
+ 1206 0577 07        	.byte0x7
+ 1207 0578 0249      	.word0x249
+ 1208 057a 0000 0085 	.long0x85
+ 1209 057e 38        	.byte0x38
+ 1210 057f 18        	.uleb128 0x18
+ 1211 0580 0000 0000 	.long.LASF92
+ 1212 0584 07        	.byte0x7
+ 1213 0585 024B      	.word0x24b
+ 1214 0587 0000 08E1 	.long0x8e1
+ 1215 058b 3C        	.byte0x3c
+ 1216 058c 18        	.uleb128 0x18
+ 1217 058d 0000 0000 	.long.LASF93
+ 1218 0591 07        	.byte0x7
+ 1219 0592 024E      	.word0x24e
+ 1220 0594 0000 0244 	.long0x244
+ 1221 0598 40        	.byte0x40
+ 1222 0599 18        	.uleb128 0x18
+ 1223 059a 0000 0000 	.long.LASF94
+ 1224 059e 07        	.byte0x7
+ 1225 059f 024F      	.word0x24f
+ 1226 05a1 0000 0085 	.long0x85
+ 1227 05a5 44        	.byte0x44
+ 1228 05a6 18        	.uleb128 0x18
+ 1229 05a7 0000 0000 	.long.LASF95
+ 1230 05ab 07        	.byte0x7
+ 1231 05ac 0250      	.word0x250
+ 1232 05ae 0000 0244 	.long0x244
+ 1233 05b2 48        	.byte0x48
+ 1234 05b3 18        	.uleb128 0x18
+ 1235 05b4 0000 0000 	.long.LASF96
+ 1236 05b8 07        	.byte0x7
+ 1237 05b9 0251      	.word0x251
+ 1238 05bb 0000 08E7 	.long0x8e7
+ 1239 05bf 4C        	.byte0x4c
+ 1240 05c0 18        	.uleb128 0x18
+ 1241 05c1 0000 0000 	.long.LASF97
+ 1242 05c5 07        	.byte0x7
+ 1243 05c6 0254      	.word0x254
+ 1244 05c8 0000 0085 	.long0x85
+ 1245 05cc 50        	.byte0x50
+68K GAS   			page 32
+
+
+ 1246 05cd 18        	.uleb128 0x18
+ 1247 05ce 0000 0000 	.long.LASF98
+ 1248 05d2 07        	.byte0x7
+ 1249 05d3 0255      	.word0x255
+ 1250 05d5 0000 0604 	.long0x604
+ 1251 05d9 54        	.byte0x54
+ 1252 05da 18        	.uleb128 0x18
+ 1253 05db 0000 0000 	.long.LASF99
+ 1254 05df 07        	.byte0x7
+ 1255 05e0 0278      	.word0x278
+ 1256 05e2 0000 0899 	.long0x899
+ 1257 05e6 58        	.byte0x58
+ 1258 05e7 19        	.uleb128 0x19
+ 1259 05e8 0000 0000 	.long.LASF100
+ 1260 05ec 07        	.byte0x7
+ 1261 05ed 0281      	.word0x281
+ 1262 05ef 0000 08F8 	.long0x8f8
+ 1263 05f3 0148      	.word0x148
+ 1264 05f5 19        	.uleb128 0x19
+ 1265 05f6 0000 0000 	.long.LASF101
+ 1266 05fa 07        	.byte0x7
+ 1267 05fb 0286      	.word0x286
+ 1268 05fd 0000 069E 	.long0x69e
+ 1269 0601 014C      	.word0x14c
+ 1270 0603 00        	.byte0
+ 1271 0604 08        	.uleb128 0x8
+ 1272 0605 04        	.byte0x4
+ 1273 0606 0000 0111 	.long0x111
+ 1274 060a 08        	.uleb128 0x8
+ 1275 060b 04        	.byte0x4
+ 1276 060c 0000 04D3 	.long0x4d3
+ 1277 0610 15        	.uleb128 0x15
+ 1278 0611 0000 0167 	.long0x167
+ 1279 0615 0000 062E 	.long0x62e
+ 1280 0619 16        	.uleb128 0x16
+ 1281 061a 0000 04F1 	.long0x4f1
+ 1282 061e 16        	.uleb128 0x16
+ 1283 061f 0000 01E4 	.long0x1e4
+ 1284 0623 16        	.uleb128 0x16
+ 1285 0624 0000 010B 	.long0x10b
+ 1286 0628 16        	.uleb128 0x16
+ 1287 0629 0000 0085 	.long0x85
+ 1288 062d 00        	.byte0
+ 1289 062e 08        	.uleb128 0x8
+ 1290 062f 04        	.byte0x4
+ 1291 0630 0000 0610 	.long0x610
+ 1292 0634 15        	.uleb128 0x15
+ 1293 0635 0000 007A 	.long0x7a
+ 1294 0639 0000 0652 	.long0x652
+ 1295 063d 16        	.uleb128 0x16
+ 1296 063e 0000 04F1 	.long0x4f1
+ 1297 0642 16        	.uleb128 0x16
+ 1298 0643 0000 01E4 	.long0x1e4
+ 1299 0647 16        	.uleb128 0x16
+ 1300 0648 0000 007A 	.long0x7a
+ 1301 064c 16        	.uleb128 0x16
+ 1302 064d 0000 0085 	.long0x85
+68K GAS   			page 33
+
+
+ 1303 0651 00        	.byte0
+ 1304 0652 08        	.uleb128 0x8
+ 1305 0653 04        	.byte0x4
+ 1306 0654 0000 0634 	.long0x634
+ 1307 0658 15        	.uleb128 0x15
+ 1308 0659 0000 0085 	.long0x85
+ 1309 065d 0000 066C 	.long0x66c
+ 1310 0661 16        	.uleb128 0x16
+ 1311 0662 0000 04F1 	.long0x4f1
+ 1312 0666 16        	.uleb128 0x16
+ 1313 0667 0000 01E4 	.long0x1e4
+ 1314 066b 00        	.byte0
+ 1315 066c 08        	.uleb128 0x8
+ 1316 066d 04        	.byte0x4
+ 1317 066e 0000 0658 	.long0x658
+ 1318 0672 0D        	.uleb128 0xd
+ 1319 0673 0000 002C 	.long0x2c
+ 1320 0677 0000 0682 	.long0x682
+ 1321 067b 0E        	.uleb128 0xe
+ 1322 067c 0000 0048 	.long0x48
+ 1323 0680 02        	.byte0x2
+ 1324 0681 00        	.byte0
+ 1325 0682 0D        	.uleb128 0xd
+ 1326 0683 0000 002C 	.long0x2c
+ 1327 0687 0000 0692 	.long0x692
+ 1328 068b 0E        	.uleb128 0xe
+ 1329 068c 0000 0048 	.long0x48
+ 1330 0690 00        	.byte0
+ 1331 0691 00        	.byte0
+ 1332 0692 0A        	.uleb128 0xa
+ 1333 0693 0000 0000 	.long.LASF102
+ 1334 0697 07        	.byte0x7
+ 1335 0698 011F      	.word0x11f
+ 1336 069a 0000 03A9 	.long0x3a9
+ 1337 069e 1A        	.uleb128 0x1a
+ 1338 069f 0000 0000 	.long.LASF103
+ 1339 06a3 0C        	.byte0xc
+ 1340 06a4 07        	.byte0x7
+ 1341 06a5 0123      	.word0x123
+ 1342 06a7 0000 06D3 	.long0x6d3
+ 1343 06ab 18        	.uleb128 0x18
+ 1344 06ac 0000 0000 	.long.LASF40
+ 1345 06b0 07        	.byte0x7
+ 1346 06b1 0125      	.word0x125
+ 1347 06b3 0000 06D3 	.long0x6d3
+ 1348 06b7 00        	.byte0
+ 1349 06b8 18        	.uleb128 0x18
+ 1350 06b9 0000 0000 	.long.LASF104
+ 1351 06bd 07        	.byte0x7
+ 1352 06be 0126      	.word0x126
+ 1353 06c0 0000 0085 	.long0x85
+ 1354 06c4 04        	.byte0x4
+ 1355 06c5 18        	.uleb128 0x18
+ 1356 06c6 0000 0000 	.long.LASF105
+ 1357 06ca 07        	.byte0x7
+ 1358 06cb 0127      	.word0x127
+ 1359 06cd 0000 06D9 	.long0x6d9
+68K GAS   			page 34
+
+
+ 1360 06d1 08        	.byte0x8
+ 1361 06d2 00        	.byte0
+ 1362 06d3 08        	.uleb128 0x8
+ 1363 06d4 04        	.byte0x4
+ 1364 06d5 0000 069E 	.long0x69e
+ 1365 06d9 08        	.uleb128 0x8
+ 1366 06da 04        	.byte0x4
+ 1367 06db 0000 0692 	.long0x692
+ 1368 06df 1A        	.uleb128 0x1a
+ 1369 06e0 0000 0000 	.long.LASF106
+ 1370 06e4 0E        	.byte0xe
+ 1371 06e5 07        	.byte0x7
+ 1372 06e6 013F      	.word0x13f
+ 1373 06e8 0000 0714 	.long0x714
+ 1374 06ec 18        	.uleb128 0x18
+ 1375 06ed 0000 0000 	.long.LASF107
+ 1376 06f1 07        	.byte0x7
+ 1377 06f2 0140      	.word0x140
+ 1378 06f4 0000 0714 	.long0x714
+ 1379 06f8 00        	.byte0
+ 1380 06f9 18        	.uleb128 0x18
+ 1381 06fa 0000 0000 	.long.LASF108
+ 1382 06fe 07        	.byte0x7
+ 1383 06ff 0141      	.word0x141
+ 1384 0701 0000 0714 	.long0x714
+ 1385 0705 06        	.byte0x6
+ 1386 0706 18        	.uleb128 0x18
+ 1387 0707 0000 0000 	.long.LASF109
+ 1388 070b 07        	.byte0x7
+ 1389 070c 0142      	.word0x142
+ 1390 070e 0000 003A 	.long0x3a
+ 1391 0712 0C        	.byte0xc
+ 1392 0713 00        	.byte0
+ 1393 0714 0D        	.uleb128 0xd
+ 1394 0715 0000 003A 	.long0x3a
+ 1395 0719 0000 0724 	.long0x724
+ 1396 071d 0E        	.uleb128 0xe
+ 1397 071e 0000 0048 	.long0x48
+ 1398 0722 02        	.byte0x2
+ 1399 0723 00        	.byte0
+ 1400 0724 1B        	.uleb128 0x1b
+ 1401 0725 CC        	.byte0xcc
+ 1402 0726 07        	.byte0x7
+ 1403 0727 0259      	.word0x259
+ 1404 0729 0000 0825 	.long0x825
+ 1405 072d 18        	.uleb128 0x18
+ 1406 072e 0000 0000 	.long.LASF110
+ 1407 0732 07        	.byte0x7
+ 1408 0733 025B      	.word0x25b
+ 1409 0735 0000 00B1 	.long0xb1
+ 1410 0739 00        	.byte0
+ 1411 073a 18        	.uleb128 0x18
+ 1412 073b 0000 0000 	.long.LASF111
+ 1413 073f 07        	.byte0x7
+ 1414 0740 025C      	.word0x25c
+ 1415 0742 0000 0604 	.long0x604
+ 1416 0746 04        	.byte0x4
+68K GAS   			page 35
+
+
+ 1417 0747 18        	.uleb128 0x18
+ 1418 0748 0000 0000 	.long.LASF112
+ 1419 074c 07        	.byte0x7
+ 1420 074d 025D      	.word0x25d
+ 1421 074f 0000 0825 	.long0x825
+ 1422 0753 08        	.byte0x8
+ 1423 0754 18        	.uleb128 0x18
+ 1424 0755 0000 0000 	.long.LASF113
+ 1425 0759 07        	.byte0x7
+ 1426 075a 025E      	.word0x25e
+ 1427 075c 0000 025A 	.long0x25a
+ 1428 0760 24        	.byte0x24
+ 1429 0761 18        	.uleb128 0x18
+ 1430 0762 0000 0000 	.long.LASF114
+ 1431 0766 07        	.byte0x7
+ 1432 0767 025F      	.word0x25f
+ 1433 0769 0000 0085 	.long0x85
+ 1434 076d 48        	.byte0x48
+ 1435 076e 18        	.uleb128 0x18
+ 1436 076f 0000 0000 	.long.LASF115
+ 1437 0773 07        	.byte0x7
+ 1438 0774 0260      	.word0x260
+ 1439 0776 0000 0061 	.long0x61
+ 1440 077a 4C        	.byte0x4c
+ 1441 077b 18        	.uleb128 0x18
+ 1442 077c 0000 0000 	.long.LASF116
+ 1443 0780 07        	.byte0x7
+ 1444 0781 0261      	.word0x261
+ 1445 0783 0000 06DF 	.long0x6df
+ 1446 0787 54        	.byte0x54
+ 1447 0788 18        	.uleb128 0x18
+ 1448 0789 0000 0000 	.long.LASF117
+ 1449 078d 07        	.byte0x7
+ 1450 078e 0262      	.word0x262
+ 1451 0790 0000 01CE 	.long0x1ce
+ 1452 0794 64        	.byte0x64
+ 1453 0795 18        	.uleb128 0x18
+ 1454 0796 0000 0000 	.long.LASF118
+ 1455 079a 07        	.byte0x7
+ 1456 079b 0263      	.word0x263
+ 1457 079d 0000 01CE 	.long0x1ce
+ 1458 07a1 6C        	.byte0x6c
+ 1459 07a2 18        	.uleb128 0x18
+ 1460 07a3 0000 0000 	.long.LASF119
+ 1461 07a7 07        	.byte0x7
+ 1462 07a8 0264      	.word0x264
+ 1463 07aa 0000 01CE 	.long0x1ce
+ 1464 07ae 74        	.byte0x74
+ 1465 07af 18        	.uleb128 0x18
+ 1466 07b0 0000 0000 	.long.LASF120
+ 1467 07b4 07        	.byte0x7
+ 1468 07b5 0265      	.word0x265
+ 1469 07b7 0000 0835 	.long0x835
+ 1470 07bb 7C        	.byte0x7c
+ 1471 07bc 18        	.uleb128 0x18
+ 1472 07bd 0000 0000 	.long.LASF121
+ 1473 07c1 07        	.byte0x7
+68K GAS   			page 36
+
+
+ 1474 07c2 0266      	.word0x266
+ 1475 07c4 0000 0845 	.long0x845
+ 1476 07c8 84        	.byte0x84
+ 1477 07c9 18        	.uleb128 0x18
+ 1478 07ca 0000 0000 	.long.LASF122
+ 1479 07ce 07        	.byte0x7
+ 1480 07cf 0267      	.word0x267
+ 1481 07d1 0000 0085 	.long0x85
+ 1482 07d5 9C        	.byte0x9c
+ 1483 07d6 18        	.uleb128 0x18
+ 1484 07d7 0000 0000 	.long.LASF123
+ 1485 07db 07        	.byte0x7
+ 1486 07dc 0268      	.word0x268
+ 1487 07de 0000 01CE 	.long0x1ce
+ 1488 07e2 A0        	.byte0xa0
+ 1489 07e3 18        	.uleb128 0x18
+ 1490 07e4 0000 0000 	.long.LASF124
+ 1491 07e8 07        	.byte0x7
+ 1492 07e9 0269      	.word0x269
+ 1493 07eb 0000 01CE 	.long0x1ce
+ 1494 07ef A8        	.byte0xa8
+ 1495 07f0 18        	.uleb128 0x18
+ 1496 07f1 0000 0000 	.long.LASF125
+ 1497 07f5 07        	.byte0x7
+ 1498 07f6 026A      	.word0x26a
+ 1499 07f8 0000 01CE 	.long0x1ce
+ 1500 07fc B0        	.byte0xb0
+ 1501 07fd 18        	.uleb128 0x18
+ 1502 07fe 0000 0000 	.long.LASF126
+ 1503 0802 07        	.byte0x7
+ 1504 0803 026B      	.word0x26b
+ 1505 0805 0000 01CE 	.long0x1ce
+ 1506 0809 B8        	.byte0xb8
+ 1507 080a 18        	.uleb128 0x18
+ 1508 080b 0000 0000 	.long.LASF127
+ 1509 080f 07        	.byte0x7
+ 1510 0810 026C      	.word0x26c
+ 1511 0812 0000 01CE 	.long0x1ce
+ 1512 0816 C0        	.byte0xc0
+ 1513 0817 18        	.uleb128 0x18
+ 1514 0818 0000 0000 	.long.LASF128
+ 1515 081c 07        	.byte0x7
+ 1516 081d 026D      	.word0x26d
+ 1517 081f 0000 0085 	.long0x85
+ 1518 0823 C8        	.byte0xc8
+ 1519 0824 00        	.byte0
+ 1520 0825 0D        	.uleb128 0xd
+ 1521 0826 0000 0111 	.long0x111
+ 1522 082a 0000 0835 	.long0x835
+ 1523 082e 0E        	.uleb128 0xe
+ 1524 082f 0000 0048 	.long0x48
+ 1525 0833 19        	.byte0x19
+ 1526 0834 00        	.byte0
+ 1527 0835 0D        	.uleb128 0xd
+ 1528 0836 0000 0111 	.long0x111
+ 1529 083a 0000 0845 	.long0x845
+ 1530 083e 0E        	.uleb128 0xe
+68K GAS   			page 37
+
+
+ 1531 083f 0000 0048 	.long0x48
+ 1532 0843 07        	.byte0x7
+ 1533 0844 00        	.byte0
+ 1534 0845 0D        	.uleb128 0xd
+ 1535 0846 0000 0111 	.long0x111
+ 1536 084a 0000 0855 	.long0x855
+ 1537 084e 0E        	.uleb128 0xe
+ 1538 084f 0000 0048 	.long0x48
+ 1539 0853 17        	.byte0x17
+ 1540 0854 00        	.byte0
+ 1541 0855 1B        	.uleb128 0x1b
+ 1542 0856 F0        	.byte0xf0
+ 1543 0857 07        	.byte0x7
+ 1544 0858 0272      	.word0x272
+ 1545 085a 0000 0879 	.long0x879
+ 1546 085e 18        	.uleb128 0x18
+ 1547 085f 0000 0000 	.long.LASF129
+ 1548 0863 07        	.byte0x7
+ 1549 0864 0275      	.word0x275
+ 1550 0866 0000 0879 	.long0x879
+ 1551 086a 00        	.byte0
+ 1552 086b 18        	.uleb128 0x18
+ 1553 086c 0000 0000 	.long.LASF130
+ 1554 0870 07        	.byte0x7
+ 1555 0871 0276      	.word0x276
+ 1556 0873 0000 0889 	.long0x889
+ 1557 0877 78        	.byte0x78
+ 1558 0878 00        	.byte0
+ 1559 0879 0D        	.uleb128 0xd
+ 1560 087a 0000 03A3 	.long0x3a3
+ 1561 087e 0000 0889 	.long0x889
+ 1562 0882 0E        	.uleb128 0xe
+ 1563 0883 0000 0048 	.long0x48
+ 1564 0887 1D        	.byte0x1d
+ 1565 0888 00        	.byte0
+ 1566 0889 0D        	.uleb128 0xd
+ 1567 088a 0000 00B1 	.long0xb1
+ 1568 088e 0000 0899 	.long0x899
+ 1569 0892 0E        	.uleb128 0xe
+ 1570 0893 0000 0048 	.long0x48
+ 1571 0897 1D        	.byte0x1d
+ 1572 0898 00        	.byte0
+ 1573 0899 1C        	.uleb128 0x1c
+ 1574 089a F0        	.byte0xf0
+ 1575 089b 07        	.byte0x7
+ 1576 089c 0257      	.word0x257
+ 1577 089e 0000 08BB 	.long0x8bb
+ 1578 08a2 1D        	.uleb128 0x1d
+ 1579 08a3 0000 0000 	.long.LASF82
+ 1580 08a7 07        	.byte0x7
+ 1581 08a8 026E      	.word0x26e
+ 1582 08aa 0000 0724 	.long0x724
+ 1583 08ae 1D        	.uleb128 0x1d
+ 1584 08af 0000 0000 	.long.LASF131
+ 1585 08b3 07        	.byte0x7
+ 1586 08b4 0277      	.word0x277
+ 1587 08b6 0000 0855 	.long0x855
+68K GAS   			page 38
+
+
+ 1588 08ba 00        	.byte0
+ 1589 08bb 0D        	.uleb128 0xd
+ 1590 08bc 0000 0111 	.long0x111
+ 1591 08c0 0000 08CB 	.long0x8cb
+ 1592 08c4 0E        	.uleb128 0xe
+ 1593 08c5 0000 0048 	.long0x48
+ 1594 08c9 18        	.byte0x18
+ 1595 08ca 00        	.byte0
+ 1596 08cb 07        	.uleb128 0x7
+ 1597 08cc 0000 0000 	.long.LASF132
+ 1598 08d0 08        	.uleb128 0x8
+ 1599 08d1 04        	.byte0x4
+ 1600 08d2 0000 08CB 	.long0x8cb
+ 1601 08d6 1E        	.uleb128 0x1e
+ 1602 08d7 0000 08E1 	.long0x8e1
+ 1603 08db 16        	.uleb128 0x16
+ 1604 08dc 0000 04F1 	.long0x4f1
+ 1605 08e0 00        	.byte0
+ 1606 08e1 08        	.uleb128 0x8
+ 1607 08e2 04        	.byte0x4
+ 1608 08e3 0000 08D6 	.long0x8d6
+ 1609 08e7 08        	.uleb128 0x8
+ 1610 08e8 04        	.byte0x4
+ 1611 08e9 0000 0244 	.long0x244
+ 1612 08ed 1E        	.uleb128 0x1e
+ 1613 08ee 0000 08F8 	.long0x8f8
+ 1614 08f2 16        	.uleb128 0x16
+ 1615 08f3 0000 0085 	.long0x85
+ 1616 08f7 00        	.byte0
+ 1617 08f8 08        	.uleb128 0x8
+ 1618 08f9 04        	.byte0x4
+ 1619 08fa 0000 08FE 	.long0x8fe
+ 1620 08fe 08        	.uleb128 0x8
+ 1621 08ff 04        	.byte0x4
+ 1622 0900 0000 08ED 	.long0x8ed
+ 1623 0904 0D        	.uleb128 0xd
+ 1624 0905 0000 0692 	.long0x692
+ 1625 0909 0000 0914 	.long0x914
+ 1626 090d 0E        	.uleb128 0xe
+ 1627 090e 0000 0048 	.long0x48
+ 1628 0912 02        	.byte0x2
+ 1629 0913 00        	.byte0
+ 1630 0914 1F        	.uleb128 0x1f
+ 1631 0915 0000 0000 	.long.LASF133
+ 1632 0919 07        	.byte0x7
+ 1633 091a 028D      	.word0x28d
+ 1634 091c 0000 0904 	.long0x904
+ 1635 0920 1F        	.uleb128 0x1f
+ 1636 0921 0000 0000 	.long.LASF134
+ 1637 0925 07        	.byte0x7
+ 1638 0926 0307      	.word0x307
+ 1639 0928 0000 04F1 	.long0x4f1
+ 1640 092c 1F        	.uleb128 0x1f
+ 1641 092d 0000 0000 	.long.LASF135
+ 1642 0931 07        	.byte0x7
+ 1643 0932 0308      	.word0x308
+ 1644 0934 0000 04F7 	.long0x4f7
+68K GAS   			page 39
+
+
+ 1645 0938 1F        	.uleb128 0x1f
+ 1646 0939 0000 0000 	.long.LASF136
+ 1647 093d 07        	.byte0x7
+ 1648 093e 031A      	.word0x31a
+ 1649 0940 0000 0361 	.long0x361
+ 1650 0944 03        	.uleb128 0x3
+ 1651 0945 0000 0000 	.long.LASF137
+ 1652 0949 08        	.byte0x8
+ 1653 094a E9        	.byte0xe9
+ 1654 094b 0000 0041 	.long0x41
+ 1655 094f 03        	.uleb128 0x3
+ 1656 0950 0000 0000 	.long.LASF138
+ 1657 0954 08        	.byte0x8
+ 1658 0955 EB        	.byte0xeb
+ 1659 0956 0000 002C 	.long0x2c
+ 1660 095a 03        	.uleb128 0x3
+ 1661 095b 0000 0000 	.long.LASF139
+ 1662 095f 08        	.byte0x8
+ 1663 0960 ED        	.byte0xed
+ 1664 0961 0000 0048 	.long0x48
+ 1665 0965 20        	.uleb128 0x20
+ 1666 0966 0000 0000 	.long.LASF140
+ 1667 096a 09        	.byte0x9
+ 1668 096b 63        	.byte0x63
+ 1669 096c 0000 0604 	.long0x604
+ 1670 0970 20        	.uleb128 0x20
+ 1671 0971 0000 0000 	.long.LASF141
+ 1672 0975 0A        	.byte0xa
+ 1673 0976 9A        	.byte0x9a
+ 1674 0977 0000 0041 	.long0x41
+ 1675 097b 20        	.uleb128 0x20
+ 1676 097c 0000 0000 	.long.LASF142
+ 1677 0980 0A        	.byte0xa
+ 1678 0981 9B        	.byte0x9b
+ 1679 0982 0000 0085 	.long0x85
+ 1680 0986 0D        	.uleb128 0xd
+ 1681 0987 0000 0604 	.long0x604
+ 1682 098b 0000 0996 	.long0x996
+ 1683 098f 0E        	.uleb128 0xe
+ 1684 0990 0000 0048 	.long0x48
+ 1685 0994 01        	.byte0x1
+ 1686 0995 00        	.byte0
+ 1687 0996 20        	.uleb128 0x20
+ 1688 0997 0000 0000 	.long.LASF143
+ 1689 099b 0A        	.byte0xa
+ 1690 099c 9E        	.byte0x9e
+ 1691 099d 0000 0986 	.long0x986
+ 1692 09a1 21        	.uleb128 0x21
+ 1693 09a2 0034 A810 	.long0x34a810
+ 1694 09a6 0B        	.byte0xb
+ 1695 09a7 25        	.byte0x25
+ 1696 09a8 0000 0A16 	.long0xa16
+ 1697 09ac 06        	.uleb128 0x6
+ 1698 09ad 0000 0000 	.long.LASF144
+ 1699 09b1 0B        	.byte0xb
+ 1700 09b2 27        	.byte0x27
+ 1701 09b3 0000 095A 	.long0x95a
+68K GAS   			page 40
+
+
+ 1702 09b7 00        	.byte0
+ 1703 09b8 06        	.uleb128 0x6
+ 1704 09b9 0000 0000 	.long.LASF145
+ 1705 09bd 0B        	.byte0xb
+ 1706 09be 28        	.byte0x28
+ 1707 09bf 0000 095A 	.long0x95a
+ 1708 09c3 04        	.byte0x4
+ 1709 09c4 06        	.uleb128 0x6
+ 1710 09c5 0000 0000 	.long.LASF146
+ 1711 09c9 0B        	.byte0xb
+ 1712 09ca 29        	.byte0x29
+ 1713 09cb 0000 095A 	.long0x95a
+ 1714 09cf 08        	.byte0x8
+ 1715 09d0 06        	.uleb128 0x6
+ 1716 09d1 0000 0000 	.long.LASF147
+ 1717 09d5 0B        	.byte0xb
+ 1718 09d6 2A        	.byte0x2a
+ 1719 09d7 0000 095A 	.long0x95a
+ 1720 09db 0C        	.byte0xc
+ 1721 09dc 06        	.uleb128 0x6
+ 1722 09dd 0000 0000 	.long.LASF148
+ 1723 09e1 0B        	.byte0xb
+ 1724 09e2 2B        	.byte0x2b
+ 1725 09e3 0000 0A16 	.long0xa16
+ 1726 09e7 10        	.byte0x10
+ 1727 09e8 22        	.uleb128 0x22
+ 1728 09e9 0000 0000 	.long.LASF149
+ 1729 09ed 0B        	.byte0xb
+ 1730 09ee 2C        	.byte0x2c
+ 1731 09ef 0000 0A29 	.long0xa29
+ 1732 09f3 0002 A810 	.long0x2a810
+ 1733 09f7 22        	.uleb128 0x22
+ 1734 09f8 0000 0000 	.long.LASF150
+ 1735 09fc 0B        	.byte0xb
+ 1736 09fd 2D        	.byte0x2d
+ 1737 09fe 0000 0A3C 	.long0xa3c
+ 1738 0a02 0022 A810 	.long0x22a810
+ 1739 0a06 22        	.uleb128 0x22
+ 1740 0a07 0000 0000 	.long.LASF151
+ 1741 0a0b 0B        	.byte0xb
+ 1742 0a0c 2E        	.byte0x2e
+ 1743 0a0d 0000 0A4F 	.long0xa4f
+ 1744 0a11 0024 A810 	.long0x24a810
+ 1745 0a15 00        	.byte0
+ 1746 0a16 0D        	.uleb128 0xd
+ 1747 0a17 0000 094F 	.long0x94f
+ 1748 0a1b 0000 0A29 	.long0xa29
+ 1749 0a1f 23        	.uleb128 0x23
+ 1750 0a20 0000 0048 	.long0x48
+ 1751 0a24 0002 A7FF 	.long0x2a7ff
+ 1752 0a28 00        	.byte0
+ 1753 0a29 0D        	.uleb128 0xd
+ 1754 0a2a 0000 094F 	.long0x94f
+ 1755 0a2e 0000 0A3C 	.long0xa3c
+ 1756 0a32 23        	.uleb128 0x23
+ 1757 0a33 0000 0048 	.long0x48
+ 1758 0a37 001F FFFF 	.long0x1fffff
+68K GAS   			page 41
+
+
+ 1759 0a3b 00        	.byte0
+ 1760 0a3c 0D        	.uleb128 0xd
+ 1761 0a3d 0000 094F 	.long0x94f
+ 1762 0a41 0000 0A4F 	.long0xa4f
+ 1763 0a45 23        	.uleb128 0x23
+ 1764 0a46 0000 0048 	.long0x48
+ 1765 0a4a 0001 FFFF 	.long0x1ffff
+ 1766 0a4e 00        	.byte0
+ 1767 0a4f 0D        	.uleb128 0xd
+ 1768 0a50 0000 094F 	.long0x94f
+ 1769 0a54 0000 0A62 	.long0xa62
+ 1770 0a58 23        	.uleb128 0x23
+ 1771 0a59 0000 0048 	.long0x48
+ 1772 0a5d 000F FFFF 	.long0xfffff
+ 1773 0a61 00        	.byte0
+ 1774 0a62 03        	.uleb128 0x3
+ 1775 0a63 0000 0000 	.long.LASF152
+ 1776 0a67 0B        	.byte0xb
+ 1777 0a68 30        	.byte0x30
+ 1778 0a69 0000 09A1 	.long0x9a1
+ 1779 0a6d 20        	.uleb128 0x20
+ 1780 0a6e 0000 0000 	.long.LASF153
+ 1781 0a72 0B        	.byte0xb
+ 1782 0a73 3A        	.byte0x3a
+ 1783 0a74 0000 0A78 	.long0xa78
+ 1784 0a78 08        	.uleb128 0x8
+ 1785 0a79 04        	.byte0x4
+ 1786 0a7a 0000 0A62 	.long0xa62
+ 1787 0a7e 24        	.uleb128 0x24
+ 1788 0a7f 0000 0A6D 	.long0xa6d
+ 1789 0a83 01        	.byte0x1
+ 1790 0a84 3B        	.byte0x3b
+ 1791 0a85 05        	.uleb128 0x5
+ 1792 0a86 03        	.byte0x3
+ 1793 0a87 0000 0000 	.longCFE_PSP_ReservedMemoryPtr
+ 1794 0a8b 25        	.uleb128 0x25
+ 1795 0a8c 0000 0000 	.long.LASF186
+ 1796 0a90 01        	.byte0x1
+ 1797 0a91 01B2      	.word0x1b2
+ 1798 0a93 0000 0000 	.long.LFB68
+ 1799 0a97 0000 00A4 	.long.LFE68-.LFB68
+ 1800 0a9b 01        	.uleb128 0x1
+ 1801 0a9c 9C        	.byte0x9c
+ 1802 0a9d 0000 0ADE 	.long0xade
+ 1803 0aa1 26        	.uleb128 0x26
+ 1804 0aa2 0000 0000 	.long.LASF157
+ 1805 0aa6 01        	.byte0x1
+ 1806 0aa7 01B2      	.word0x1b2
+ 1807 0aa9 0000 0604 	.long0x604
+ 1808 0aad 02        	.uleb128 0x2
+ 1809 0aae 91        	.byte0x91
+ 1810 0aaf 00        	.sleb128 0
+ 1811 0ab0 27        	.uleb128 0x27
+ 1812 0ab1 0000 0000 	.long.LASF154
+ 1813 0ab5 01        	.byte0x1
+ 1814 0ab6 01B5      	.word0x1b5
+ 1815 0ab8 0000 0085 	.long0x85
+68K GAS   			page 42
+
+
+ 1816 0abc 02        	.uleb128 0x2
+ 1817 0abd 91        	.byte0x91
+ 1818 0abe 78        	.sleb128 -8
+ 1819 0abf 27        	.uleb128 0x27
+ 1820 0ac0 0000 0000 	.long.LASF155
+ 1821 0ac4 01        	.byte0x1
+ 1822 0ac5 01B6      	.word0x1b6
+ 1823 0ac7 0000 0986 	.long0x986
+ 1824 0acb 02        	.uleb128 0x2
+ 1825 0acc 91        	.byte0x91
+ 1826 0acd 70        	.sleb128 -16
+ 1827 0ace 27        	.uleb128 0x27
+ 1828 0acf 0000 0000 	.long.LASF156
+ 1829 0ad3 01        	.byte0x1
+ 1830 0ad4 01B7      	.word0x1b7
+ 1831 0ad6 0000 0986 	.long0x986
+ 1832 0ada 02        	.uleb128 0x2
+ 1833 0adb 91        	.byte0x91
+ 1834 0adc 68        	.sleb128 -24
+ 1835 0add 00        	.byte0
+ 1836 0ade 28        	.uleb128 0x28
+ 1837 0adf 0000 0000 	.long.LASF163
+ 1838 0ae3 01        	.byte0x1
+ 1839 0ae4 0190      	.word0x190
+ 1840 0ae6 0000 0944 	.long0x944
+ 1841 0aea 0000 0000 	.long.LFB67
+ 1842 0aee 0000 0044 	.long.LFE67-.LFB67
+ 1843 0af2 01        	.uleb128 0x1
+ 1844 0af3 9C        	.byte0x9c
+ 1845 0af4 0000 0B44 	.long0xb44
+ 1846 0af8 26        	.uleb128 0x26
+ 1847 0af9 0000 0000 	.long.LASF158
+ 1848 0afd 01        	.byte0x1
+ 1849 0afe 0190      	.word0x190
+ 1850 0b00 0000 01E4 	.long0x1e4
+ 1851 0b04 02        	.uleb128 0x2
+ 1852 0b05 91        	.byte0x91
+ 1853 0b06 00        	.sleb128 0
+ 1854 0b07 26        	.uleb128 0x26
+ 1855 0b08 0000 0000 	.long.LASF159
+ 1856 0b0c 01        	.byte0x1
+ 1857 0b0d 0190      	.word0x190
+ 1858 0b0f 0000 0B44 	.long0xb44
+ 1859 0b13 02        	.uleb128 0x2
+ 1860 0b14 91        	.byte0x91
+ 1861 0b15 04        	.sleb128 4
+ 1862 0b16 27        	.uleb128 0x27
+ 1863 0b17 0000 0000 	.long.LASF160
+ 1864 0b1b 01        	.byte0x1
+ 1865 0b1c 0192      	.word0x192
+ 1866 0b1e 0000 0944 	.long0x944
+ 1867 0b22 02        	.uleb128 0x2
+ 1868 0b23 91        	.byte0x91
+ 1869 0b24 78        	.sleb128 -8
+ 1870 0b25 27        	.uleb128 0x27
+ 1871 0b26 0000 0000 	.long.LASF161
+ 1872 0b2a 01        	.byte0x1
+68K GAS   			page 43
+
+
+ 1873 0b2b 0193      	.word0x193
+ 1874 0b2d 0000 095A 	.long0x95a
+ 1875 0b31 02        	.uleb128 0x2
+ 1876 0b32 91        	.byte0x91
+ 1877 0b33 70        	.sleb128 -16
+ 1878 0b34 27        	.uleb128 0x27
+ 1879 0b35 0000 0000 	.long.LASF162
+ 1880 0b39 01        	.byte0x1
+ 1881 0b3a 0194      	.word0x194
+ 1882 0b3c 0000 095A 	.long0x95a
+ 1883 0b40 02        	.uleb128 0x2
+ 1884 0b41 91        	.byte0x91
+ 1885 0b42 74        	.sleb128 -12
+ 1886 0b43 00        	.byte0
+ 1887 0b44 08        	.uleb128 0x8
+ 1888 0b45 04        	.byte0x4
+ 1889 0b46 0000 095A 	.long0x95a
+ 1890 0b4a 28        	.uleb128 0x28
+ 1891 0b4b 0000 0000 	.long.LASF164
+ 1892 0b4f 01        	.byte0x1
+ 1893 0b50 0165      	.word0x165
+ 1894 0b52 0000 0944 	.long0x944
+ 1895 0b56 0000 0000 	.long.LFB66
+ 1896 0b5a 0000 0044 	.long.LFE66-.LFB66
+ 1897 0b5e 01        	.uleb128 0x1
+ 1898 0b5f 9C        	.byte0x9c
+ 1899 0b60 0000 0BB0 	.long0xbb0
+ 1900 0b64 26        	.uleb128 0x26
+ 1901 0b65 0000 0000 	.long.LASF165
+ 1902 0b69 01        	.byte0x1
+ 1903 0b6a 0165      	.word0x165
+ 1904 0b6c 0000 01E4 	.long0x1e4
+ 1905 0b70 02        	.uleb128 0x2
+ 1906 0b71 91        	.byte0x91
+ 1907 0b72 00        	.sleb128 0
+ 1908 0b73 26        	.uleb128 0x26
+ 1909 0b74 0000 0000 	.long.LASF166
+ 1910 0b78 01        	.byte0x1
+ 1911 0b79 0165      	.word0x165
+ 1912 0b7b 0000 0B44 	.long0xb44
+ 1913 0b7f 02        	.uleb128 0x2
+ 1914 0b80 91        	.byte0x91
+ 1915 0b81 04        	.sleb128 4
+ 1916 0b82 27        	.uleb128 0x27
+ 1917 0b83 0000 0000 	.long.LASF160
+ 1918 0b87 01        	.byte0x1
+ 1919 0b88 0167      	.word0x167
+ 1920 0b8a 0000 0944 	.long0x944
+ 1921 0b8e 02        	.uleb128 0x2
+ 1922 0b8f 91        	.byte0x91
+ 1923 0b90 78        	.sleb128 -8
+ 1924 0b91 27        	.uleb128 0x27
+ 1925 0b92 0000 0000 	.long.LASF161
+ 1926 0b96 01        	.byte0x1
+ 1927 0b97 0168      	.word0x168
+ 1928 0b99 0000 095A 	.long0x95a
+ 1929 0b9d 02        	.uleb128 0x2
+68K GAS   			page 44
+
+
+ 1930 0b9e 91        	.byte0x91
+ 1931 0b9f 70        	.sleb128 -16
+ 1932 0ba0 27        	.uleb128 0x27
+ 1933 0ba1 0000 0000 	.long.LASF162
+ 1934 0ba5 01        	.byte0x1
+ 1935 0ba6 0169      	.word0x169
+ 1936 0ba8 0000 095A 	.long0x95a
+ 1937 0bac 02        	.uleb128 0x2
+ 1938 0bad 91        	.byte0x91
+ 1939 0bae 74        	.sleb128 -12
+ 1940 0baf 00        	.byte0
+ 1941 0bb0 29        	.uleb128 0x29
+ 1942 0bb1 0000 0000 	.long.LASF167
+ 1943 0bb5 01        	.byte0x1
+ 1944 0bb6 013D      	.word0x13d
+ 1945 0bb8 0000 0944 	.long0x944
+ 1946 0bbc 0000 0000 	.long.LFB65
+ 1947 0bc0 0000 0046 	.long.LFE65-.LFB65
+ 1948 0bc4 01        	.uleb128 0x1
+ 1949 0bc5 9C        	.byte0x9c
+ 1950 0bc6 0000 0BE9 	.long0xbe9
+ 1951 0bca 26        	.uleb128 0x26
+ 1952 0bcb 0000 0000 	.long.LASF168
+ 1953 0bcf 01        	.byte0x1
+ 1954 0bd0 013D      	.word0x13d
+ 1955 0bd2 0000 095A 	.long0x95a
+ 1956 0bd6 02        	.uleb128 0x2
+ 1957 0bd7 91        	.byte0x91
+ 1958 0bd8 00        	.sleb128 0
+ 1959 0bd9 27        	.uleb128 0x27
+ 1960 0bda 0000 0000 	.long.LASF160
+ 1961 0bde 01        	.byte0x1
+ 1962 0bdf 013F      	.word0x13f
+ 1963 0be1 0000 0944 	.long0x944
+ 1964 0be5 02        	.uleb128 0x2
+ 1965 0be6 91        	.byte0x91
+ 1966 0be7 78        	.sleb128 -8
+ 1967 0be8 00        	.byte0
+ 1968 0be9 28        	.uleb128 0x28
+ 1969 0bea 0000 0000 	.long.LASF169
+ 1970 0bee 01        	.byte0x1
+ 1971 0bef 0115      	.word0x115
+ 1972 0bf1 0000 0944 	.long0x944
+ 1973 0bf5 0000 0000 	.long.LFB64
+ 1974 0bf9 0000 003C 	.long.LFE64-.LFB64
+ 1975 0bfd 01        	.uleb128 0x1
+ 1976 0bfe 9C        	.byte0x9c
+ 1977 0bff 0000 0C40 	.long0xc40
+ 1978 0c03 26        	.uleb128 0x26
+ 1979 0c04 0000 0000 	.long.LASF170
+ 1980 0c08 01        	.byte0x1
+ 1981 0c09 0115      	.word0x115
+ 1982 0c0b 0000 01E4 	.long0x1e4
+ 1983 0c0f 02        	.uleb128 0x2
+ 1984 0c10 91        	.byte0x91
+ 1985 0c11 00        	.sleb128 0
+ 1986 0c12 26        	.uleb128 0x26
+68K GAS   			page 45
+
+
+ 1987 0c13 0000 0000 	.long.LASF171
+ 1988 0c17 01        	.byte0x1
+ 1989 0c18 0115      	.word0x115
+ 1990 0c1a 0000 0B44 	.long0xb44
+ 1991 0c1e 02        	.uleb128 0x2
+ 1992 0c1f 91        	.byte0x91
+ 1993 0c20 04        	.sleb128 4
+ 1994 0c21 27        	.uleb128 0x27
+ 1995 0c22 0000 0000 	.long.LASF160
+ 1996 0c26 01        	.byte0x1
+ 1997 0c27 0117      	.word0x117
+ 1998 0c29 0000 0944 	.long0x944
+ 1999 0c2d 02        	.uleb128 0x2
+ 2000 0c2e 91        	.byte0x91
+ 2001 0c2f 78        	.sleb128 -8
+ 2002 0c30 27        	.uleb128 0x27
+ 2003 0c31 0000 0000 	.long.LASF172
+ 2004 0c35 01        	.byte0x1
+ 2005 0c36 0118      	.word0x118
+ 2006 0c38 0000 0B44 	.long0xb44
+ 2007 0c3c 02        	.uleb128 0x2
+ 2008 0c3d 91        	.byte0x91
+ 2009 0c3e 74        	.sleb128 -12
+ 2010 0c3f 00        	.byte0
+ 2011 0c40 2A        	.uleb128 0x2a
+ 2012 0c41 0000 0000 	.long.LASF173
+ 2013 0c45 01        	.byte0x1
+ 2014 0c46 EE        	.byte0xee
+ 2015 0c47 0000 0944 	.long0x944
+ 2016 0c4b 0000 0000 	.long.LFB63
+ 2017 0c4f 0000 003C 	.long.LFE63-.LFB63
+ 2018 0c53 01        	.uleb128 0x1
+ 2019 0c54 9C        	.byte0x9c
+ 2020 0c55 0000 0C92 	.long0xc92
+ 2021 0c59 2B        	.uleb128 0x2b
+ 2022 0c5a 0000 0000 	.long.LASF174
+ 2023 0c5e 01        	.byte0x1
+ 2024 0c5f EE        	.byte0xee
+ 2025 0c60 0000 01E4 	.long0x1e4
+ 2026 0c64 02        	.uleb128 0x2
+ 2027 0c65 91        	.byte0x91
+ 2028 0c66 00        	.sleb128 0
+ 2029 0c67 2B        	.uleb128 0x2b
+ 2030 0c68 0000 0000 	.long.LASF175
+ 2031 0c6c 01        	.byte0x1
+ 2032 0c6d EE        	.byte0xee
+ 2033 0c6e 0000 0B44 	.long0xb44
+ 2034 0c72 02        	.uleb128 0x2
+ 2035 0c73 91        	.byte0x91
+ 2036 0c74 04        	.sleb128 4
+ 2037 0c75 2C        	.uleb128 0x2c
+ 2038 0c76 0000 0000 	.long.LASF160
+ 2039 0c7a 01        	.byte0x1
+ 2040 0c7b F0        	.byte0xf0
+ 2041 0c7c 0000 0944 	.long0x944
+ 2042 0c80 02        	.uleb128 0x2
+ 2043 0c81 91        	.byte0x91
+68K GAS   			page 46
+
+
+ 2044 0c82 78        	.sleb128 -8
+ 2045 0c83 2C        	.uleb128 0x2c
+ 2046 0c84 0000 0000 	.long.LASF172
+ 2047 0c88 01        	.byte0x1
+ 2048 0c89 F1        	.byte0xf1
+ 2049 0c8a 0000 0B44 	.long0xb44
+ 2050 0c8e 02        	.uleb128 0x2
+ 2051 0c8f 91        	.byte0x91
+ 2052 0c90 74        	.sleb128 -12
+ 2053 0c91 00        	.byte0
+ 2054 0c92 2A        	.uleb128 0x2a
+ 2055 0c93 0000 0000 	.long.LASF176
+ 2056 0c97 01        	.byte0x1
+ 2057 0c98 C7        	.byte0xc7
+ 2058 0c99 0000 0944 	.long0x944
+ 2059 0c9d 0000 0000 	.long.LFB62
+ 2060 0ca1 0000 003C 	.long.LFE62-.LFB62
+ 2061 0ca5 01        	.uleb128 0x1
+ 2062 0ca6 9C        	.byte0x9c
+ 2063 0ca7 0000 0CE4 	.long0xce4
+ 2064 0cab 2B        	.uleb128 0x2b
+ 2065 0cac 0000 0000 	.long.LASF177
+ 2066 0cb0 01        	.byte0x1
+ 2067 0cb1 C7        	.byte0xc7
+ 2068 0cb2 0000 01E4 	.long0x1e4
+ 2069 0cb6 02        	.uleb128 0x2
+ 2070 0cb7 91        	.byte0x91
+ 2071 0cb8 00        	.sleb128 0
+ 2072 0cb9 2B        	.uleb128 0x2b
+ 2073 0cba 0000 0000 	.long.LASF178
+ 2074 0cbe 01        	.byte0x1
+ 2075 0cbf C7        	.byte0xc7
+ 2076 0cc0 0000 0B44 	.long0xb44
+ 2077 0cc4 02        	.uleb128 0x2
+ 2078 0cc5 91        	.byte0x91
+ 2079 0cc6 04        	.sleb128 4
+ 2080 0cc7 2C        	.uleb128 0x2c
+ 2081 0cc8 0000 0000 	.long.LASF160
+ 2082 0ccc 01        	.byte0x1
+ 2083 0ccd C9        	.byte0xc9
+ 2084 0cce 0000 0944 	.long0x944
+ 2085 0cd2 02        	.uleb128 0x2
+ 2086 0cd3 91        	.byte0x91
+ 2087 0cd4 78        	.sleb128 -8
+ 2088 0cd5 2C        	.uleb128 0x2c
+ 2089 0cd6 0000 0000 	.long.LASF172
+ 2090 0cda 01        	.byte0x1
+ 2091 0cdb CA        	.byte0xca
+ 2092 0cdc 0000 0B44 	.long0xb44
+ 2093 0ce0 02        	.uleb128 0x2
+ 2094 0ce1 91        	.byte0x91
+ 2095 0ce2 74        	.sleb128 -12
+ 2096 0ce3 00        	.byte0
+ 2097 0ce4 2D        	.uleb128 0x2d
+ 2098 0ce5 0000 0000 	.long.LASF179
+ 2099 0ce9 01        	.byte0x1
+ 2100 0cea 96        	.byte0x96
+68K GAS   			page 47
+
+
+ 2101 0ceb 0000 0944 	.long0x944
+ 2102 0cef 0000 0000 	.long.LFB61
+ 2103 0cf3 0000 006C 	.long.LFE61-.LFB61
+ 2104 0cf7 01        	.uleb128 0x1
+ 2105 0cf8 9C        	.byte0x9c
+ 2106 0cf9 0000 0D44 	.long0xd44
+ 2107 0cfd 2B        	.uleb128 0x2b
+ 2108 0cfe 0000 0000 	.long.LASF180
+ 2109 0d02 01        	.byte0x1
+ 2110 0d03 96        	.byte0x96
+ 2111 0d04 0000 01E4 	.long0x1e4
+ 2112 0d08 02        	.uleb128 0x2
+ 2113 0d09 91        	.byte0x91
+ 2114 0d0a 00        	.sleb128 0
+ 2115 0d0b 2B        	.uleb128 0x2b
+ 2116 0d0c 0000 0000 	.long.LASF181
+ 2117 0d10 01        	.byte0x1
+ 2118 0d11 96        	.byte0x96
+ 2119 0d12 0000 095A 	.long0x95a
+ 2120 0d16 02        	.uleb128 0x2
+ 2121 0d17 91        	.byte0x91
+ 2122 0d18 04        	.sleb128 4
+ 2123 0d19 2B        	.uleb128 0x2b
+ 2124 0d1a 0000 0000 	.long.LASF182
+ 2125 0d1e 01        	.byte0x1
+ 2126 0d1f 96        	.byte0x96
+ 2127 0d20 0000 095A 	.long0x95a
+ 2128 0d24 02        	.uleb128 0x2
+ 2129 0d25 91        	.byte0x91
+ 2130 0d26 08        	.sleb128 8
+ 2131 0d27 2C        	.uleb128 0x2c
+ 2132 0d28 0000 0000 	.long.LASF183
+ 2133 0d2c 01        	.byte0x1
+ 2134 0d2d 98        	.byte0x98
+ 2135 0d2e 0000 0D44 	.long0xd44
+ 2136 0d32 02        	.uleb128 0x2
+ 2137 0d33 91        	.byte0x91
+ 2138 0d34 74        	.sleb128 -12
+ 2139 0d35 2C        	.uleb128 0x2c
+ 2140 0d36 0000 0000 	.long.LASF160
+ 2141 0d3a 01        	.byte0x1
+ 2142 0d3b 99        	.byte0x99
+ 2143 0d3c 0000 0944 	.long0x944
+ 2144 0d40 02        	.uleb128 0x2
+ 2145 0d41 91        	.byte0x91
+ 2146 0d42 78        	.sleb128 -8
+ 2147 0d43 00        	.byte0
+ 2148 0d44 08        	.uleb128 0x8
+ 2149 0d45 04        	.byte0x4
+ 2150 0d46 0000 094F 	.long0x94f
+ 2151 0d4a 2D        	.uleb128 0x2d
+ 2152 0d4b 0000 0000 	.long.LASF184
+ 2153 0d4f 01        	.byte0x1
+ 2154 0d50 6C        	.byte0x6c
+ 2155 0d51 0000 0944 	.long0x944
+ 2156 0d55 0000 0000 	.long.LFB60
+ 2157 0d59 0000 006C 	.long.LFE60-.LFB60
+68K GAS   			page 48
+
+
+ 2158 0d5d 01        	.uleb128 0x1
+ 2159 0d5e 9C        	.byte0x9c
+ 2160 0d5f 0000 0DAA 	.long0xdaa
+ 2161 0d63 2B        	.uleb128 0x2b
+ 2162 0d64 0000 0000 	.long.LASF185
+ 2163 0d68 01        	.byte0x1
+ 2164 0d69 6C        	.byte0x6c
+ 2165 0d6a 0000 01E4 	.long0x1e4
+ 2166 0d6e 02        	.uleb128 0x2
+ 2167 0d6f 91        	.byte0x91
+ 2168 0d70 00        	.sleb128 0
+ 2169 0d71 2B        	.uleb128 0x2b
+ 2170 0d72 0000 0000 	.long.LASF181
+ 2171 0d76 01        	.byte0x1
+ 2172 0d77 6C        	.byte0x6c
+ 2173 0d78 0000 095A 	.long0x95a
+ 2174 0d7c 02        	.uleb128 0x2
+ 2175 0d7d 91        	.byte0x91
+ 2176 0d7e 04        	.sleb128 4
+ 2177 0d7f 2B        	.uleb128 0x2b
+ 2178 0d80 0000 0000 	.long.LASF182
+ 2179 0d84 01        	.byte0x1
+ 2180 0d85 6C        	.byte0x6c
+ 2181 0d86 0000 095A 	.long0x95a
+ 2182 0d8a 02        	.uleb128 0x2
+ 2183 0d8b 91        	.byte0x91
+ 2184 0d8c 08        	.sleb128 8
+ 2185 0d8d 2C        	.uleb128 0x2c
+ 2186 0d8e 0000 0000 	.long.LASF183
+ 2187 0d92 01        	.byte0x1
+ 2188 0d93 6E        	.byte0x6e
+ 2189 0d94 0000 0D44 	.long0xd44
+ 2190 0d98 02        	.uleb128 0x2
+ 2191 0d99 91        	.byte0x91
+ 2192 0d9a 74        	.sleb128 -12
+ 2193 0d9b 2C        	.uleb128 0x2c
+ 2194 0d9c 0000 0000 	.long.LASF160
+ 2195 0da0 01        	.byte0x1
+ 2196 0da1 6F        	.byte0x6f
+ 2197 0da2 0000 0944 	.long0x944
+ 2198 0da6 02        	.uleb128 0x2
+ 2199 0da7 91        	.byte0x91
+ 2200 0da8 78        	.sleb128 -8
+ 2201 0da9 00        	.byte0
+ 2202 0daa 2E        	.uleb128 0x2e
+ 2203 0dab 0000 0000 	.long.LASF187
+ 2204 0daf 01        	.byte0x1
+ 2205 0db0 50        	.byte0x50
+ 2206 0db1 0000 0944 	.long0x944
+ 2207 0db5 0000 0000 	.long.LFB59
+ 2208 0db9 0000 0022 	.long.LFE59-.LFB59
+ 2209 0dbd 01        	.uleb128 0x1
+ 2210 0dbe 9C        	.byte0x9c
+ 2211 0dbf 2B        	.uleb128 0x2b
+ 2212 0dc0 0000 0000 	.long.LASF188
+ 2213 0dc4 01        	.byte0x1
+ 2214 0dc5 50        	.byte0x50
+68K GAS   			page 49
+
+
+ 2215 0dc6 0000 0B44 	.long0xb44
+ 2216 0dca 02        	.uleb128 0x2
+ 2217 0dcb 91        	.byte0x91
+ 2218 0dcc 00        	.sleb128 0
+ 2219 0dcd 2C        	.uleb128 0x2c
+ 2220 0dce 0000 0000 	.long.LASF160
+ 2221 0dd2 01        	.byte0x1
+ 2222 0dd3 52        	.byte0x52
+ 2223 0dd4 0000 0944 	.long0x944
+ 2224 0dd8 02        	.uleb128 0x2
+ 2225 0dd9 91        	.byte0x91
+ 2226 0dda 78        	.sleb128 -8
+ 2227 0ddb 00        	.byte0
+ 2228 0ddc 00        	.byte0
+ 2229               	.section.debug_abbrev,"",@progbits
+ 2230               	.Ldebug_abbrev0:
+ 2231 0000 01        	.uleb128 0x1
+ 2232 0001 11        	.uleb128 0x11
+ 2233 0002 01        	.byte0x1
+ 2234 0003 25        	.uleb128 0x25
+ 2235 0004 0E        	.uleb128 0xe
+ 2236 0005 13        	.uleb128 0x13
+ 2237 0006 0B        	.uleb128 0xb
+ 2238 0007 03        	.uleb128 0x3
+ 2239 0008 0E        	.uleb128 0xe
+ 2240 0009 1B        	.uleb128 0x1b
+ 2241 000a 0E        	.uleb128 0xe
+ 2242 000b 11        	.uleb128 0x11
+ 2243 000c 01        	.uleb128 0x1
+ 2244 000d 12        	.uleb128 0x12
+ 2245 000e 06        	.uleb128 0x6
+ 2246 000f 10        	.uleb128 0x10
+ 2247 0010 17        	.uleb128 0x17
+ 2248 0011 00        	.byte0
+ 2249 0012 00        	.byte0
+ 2250 0013 02        	.uleb128 0x2
+ 2251 0014 24        	.uleb128 0x24
+ 2252 0015 00        	.byte0
+ 2253 0016 0B        	.uleb128 0xb
+ 2254 0017 0B        	.uleb128 0xb
+ 2255 0018 3E        	.uleb128 0x3e
+ 2256 0019 0B        	.uleb128 0xb
+ 2257 001a 03        	.uleb128 0x3
+ 2258 001b 0E        	.uleb128 0xe
+ 2259 001c 00        	.byte0
+ 2260 001d 00        	.byte0
+ 2261 001e 03        	.uleb128 0x3
+ 2262 001f 16        	.uleb128 0x16
+ 2263 0020 00        	.byte0
+ 2264 0021 03        	.uleb128 0x3
+ 2265 0022 0E        	.uleb128 0xe
+ 2266 0023 3A        	.uleb128 0x3a
+ 2267 0024 0B        	.uleb128 0xb
+ 2268 0025 3B        	.uleb128 0x3b
+ 2269 0026 0B        	.uleb128 0xb
+ 2270 0027 49        	.uleb128 0x49
+ 2271 0028 13        	.uleb128 0x13
+68K GAS   			page 50
+
+
+ 2272 0029 00        	.byte0
+ 2273 002a 00        	.byte0
+ 2274 002b 04        	.uleb128 0x4
+ 2275 002c 24        	.uleb128 0x24
+ 2276 002d 00        	.byte0
+ 2277 002e 0B        	.uleb128 0xb
+ 2278 002f 0B        	.uleb128 0xb
+ 2279 0030 3E        	.uleb128 0x3e
+ 2280 0031 0B        	.uleb128 0xb
+ 2281 0032 03        	.uleb128 0x3
+ 2282 0033 08        	.uleb128 0x8
+ 2283 0034 00        	.byte0
+ 2284 0035 00        	.byte0
+ 2285 0036 05        	.uleb128 0x5
+ 2286 0037 13        	.uleb128 0x13
+ 2287 0038 01        	.byte0x1
+ 2288 0039 03        	.uleb128 0x3
+ 2289 003a 0E        	.uleb128 0xe
+ 2290 003b 0B        	.uleb128 0xb
+ 2291 003c 0B        	.uleb128 0xb
+ 2292 003d 3A        	.uleb128 0x3a
+ 2293 003e 0B        	.uleb128 0xb
+ 2294 003f 3B        	.uleb128 0x3b
+ 2295 0040 0B        	.uleb128 0xb
+ 2296 0041 01        	.uleb128 0x1
+ 2297 0042 13        	.uleb128 0x13
+ 2298 0043 00        	.byte0
+ 2299 0044 00        	.byte0
+ 2300 0045 06        	.uleb128 0x6
+ 2301 0046 0D        	.uleb128 0xd
+ 2302 0047 00        	.byte0
+ 2303 0048 03        	.uleb128 0x3
+ 2304 0049 0E        	.uleb128 0xe
+ 2305 004a 3A        	.uleb128 0x3a
+ 2306 004b 0B        	.uleb128 0xb
+ 2307 004c 3B        	.uleb128 0x3b
+ 2308 004d 0B        	.uleb128 0xb
+ 2309 004e 49        	.uleb128 0x49
+ 2310 004f 13        	.uleb128 0x13
+ 2311 0050 38        	.uleb128 0x38
+ 2312 0051 0B        	.uleb128 0xb
+ 2313 0052 00        	.byte0
+ 2314 0053 00        	.byte0
+ 2315 0054 07        	.uleb128 0x7
+ 2316 0055 13        	.uleb128 0x13
+ 2317 0056 00        	.byte0
+ 2318 0057 03        	.uleb128 0x3
+ 2319 0058 0E        	.uleb128 0xe
+ 2320 0059 3C        	.uleb128 0x3c
+ 2321 005a 19        	.uleb128 0x19
+ 2322 005b 00        	.byte0
+ 2323 005c 00        	.byte0
+ 2324 005d 08        	.uleb128 0x8
+ 2325 005e 0F        	.uleb128 0xf
+ 2326 005f 00        	.byte0
+ 2327 0060 0B        	.uleb128 0xb
+ 2328 0061 0B        	.uleb128 0xb
+68K GAS   			page 51
+
+
+ 2329 0062 49        	.uleb128 0x49
+ 2330 0063 13        	.uleb128 0x13
+ 2331 0064 00        	.byte0
+ 2332 0065 00        	.byte0
+ 2333 0066 09        	.uleb128 0x9
+ 2334 0067 26        	.uleb128 0x26
+ 2335 0068 00        	.byte0
+ 2336 0069 49        	.uleb128 0x49
+ 2337 006a 13        	.uleb128 0x13
+ 2338 006b 00        	.byte0
+ 2339 006c 00        	.byte0
+ 2340 006d 0A        	.uleb128 0xa
+ 2341 006e 16        	.uleb128 0x16
+ 2342 006f 00        	.byte0
+ 2343 0070 03        	.uleb128 0x3
+ 2344 0071 0E        	.uleb128 0xe
+ 2345 0072 3A        	.uleb128 0x3a
+ 2346 0073 0B        	.uleb128 0xb
+ 2347 0074 3B        	.uleb128 0x3b
+ 2348 0075 05        	.uleb128 0x5
+ 2349 0076 49        	.uleb128 0x49
+ 2350 0077 13        	.uleb128 0x13
+ 2351 0078 00        	.byte0
+ 2352 0079 00        	.byte0
+ 2353 007a 0B        	.uleb128 0xb
+ 2354 007b 17        	.uleb128 0x17
+ 2355 007c 01        	.byte0x1
+ 2356 007d 0B        	.uleb128 0xb
+ 2357 007e 0B        	.uleb128 0xb
+ 2358 007f 3A        	.uleb128 0x3a
+ 2359 0080 0B        	.uleb128 0xb
+ 2360 0081 3B        	.uleb128 0x3b
+ 2361 0082 0B        	.uleb128 0xb
+ 2362 0083 01        	.uleb128 0x1
+ 2363 0084 13        	.uleb128 0x13
+ 2364 0085 00        	.byte0
+ 2365 0086 00        	.byte0
+ 2366 0087 0C        	.uleb128 0xc
+ 2367 0088 0D        	.uleb128 0xd
+ 2368 0089 00        	.byte0
+ 2369 008a 03        	.uleb128 0x3
+ 2370 008b 0E        	.uleb128 0xe
+ 2371 008c 3A        	.uleb128 0x3a
+ 2372 008d 0B        	.uleb128 0xb
+ 2373 008e 3B        	.uleb128 0x3b
+ 2374 008f 0B        	.uleb128 0xb
+ 2375 0090 49        	.uleb128 0x49
+ 2376 0091 13        	.uleb128 0x13
+ 2377 0092 00        	.byte0
+ 2378 0093 00        	.byte0
+ 2379 0094 0D        	.uleb128 0xd
+ 2380 0095 01        	.uleb128 0x1
+ 2381 0096 01        	.byte0x1
+ 2382 0097 49        	.uleb128 0x49
+ 2383 0098 13        	.uleb128 0x13
+ 2384 0099 01        	.uleb128 0x1
+ 2385 009a 13        	.uleb128 0x13
+68K GAS   			page 52
+
+
+ 2386 009b 00        	.byte0
+ 2387 009c 00        	.byte0
+ 2388 009d 0E        	.uleb128 0xe
+ 2389 009e 21        	.uleb128 0x21
+ 2390 009f 00        	.byte0
+ 2391 00a0 49        	.uleb128 0x49
+ 2392 00a1 13        	.uleb128 0x13
+ 2393 00a2 2F        	.uleb128 0x2f
+ 2394 00a3 0B        	.uleb128 0xb
+ 2395 00a4 00        	.byte0
+ 2396 00a5 00        	.byte0
+ 2397 00a6 0F        	.uleb128 0xf
+ 2398 00a7 13        	.uleb128 0x13
+ 2399 00a8 01        	.byte0x1
+ 2400 00a9 0B        	.uleb128 0xb
+ 2401 00aa 0B        	.uleb128 0xb
+ 2402 00ab 3A        	.uleb128 0x3a
+ 2403 00ac 0B        	.uleb128 0xb
+ 2404 00ad 3B        	.uleb128 0x3b
+ 2405 00ae 0B        	.uleb128 0xb
+ 2406 00af 01        	.uleb128 0x1
+ 2407 00b0 13        	.uleb128 0x13
+ 2408 00b1 00        	.byte0
+ 2409 00b2 00        	.byte0
+ 2410 00b3 10        	.uleb128 0x10
+ 2411 00b4 0F        	.uleb128 0xf
+ 2412 00b5 00        	.byte0
+ 2413 00b6 0B        	.uleb128 0xb
+ 2414 00b7 0B        	.uleb128 0xb
+ 2415 00b8 00        	.byte0
+ 2416 00b9 00        	.byte0
+ 2417 00ba 11        	.uleb128 0x11
+ 2418 00bb 0D        	.uleb128 0xd
+ 2419 00bc 00        	.byte0
+ 2420 00bd 03        	.uleb128 0x3
+ 2421 00be 08        	.uleb128 0x8
+ 2422 00bf 3A        	.uleb128 0x3a
+ 2423 00c0 0B        	.uleb128 0xb
+ 2424 00c1 3B        	.uleb128 0x3b
+ 2425 00c2 0B        	.uleb128 0xb
+ 2426 00c3 49        	.uleb128 0x49
+ 2427 00c4 13        	.uleb128 0x13
+ 2428 00c5 38        	.uleb128 0x38
+ 2429 00c6 0B        	.uleb128 0xb
+ 2430 00c7 00        	.byte0
+ 2431 00c8 00        	.byte0
+ 2432 00c9 12        	.uleb128 0x12
+ 2433 00ca 13        	.uleb128 0x13
+ 2434 00cb 01        	.byte0x1
+ 2435 00cc 03        	.uleb128 0x3
+ 2436 00cd 0E        	.uleb128 0xe
+ 2437 00ce 0B        	.uleb128 0xb
+ 2438 00cf 05        	.uleb128 0x5
+ 2439 00d0 3A        	.uleb128 0x3a
+ 2440 00d1 0B        	.uleb128 0xb
+ 2441 00d2 3B        	.uleb128 0x3b
+ 2442 00d3 0B        	.uleb128 0xb
+68K GAS   			page 53
+
+
+ 2443 00d4 01        	.uleb128 0x1
+ 2444 00d5 13        	.uleb128 0x13
+ 2445 00d6 00        	.byte0
+ 2446 00d7 00        	.byte0
+ 2447 00d8 13        	.uleb128 0x13
+ 2448 00d9 0D        	.uleb128 0xd
+ 2449 00da 00        	.byte0
+ 2450 00db 03        	.uleb128 0x3
+ 2451 00dc 0E        	.uleb128 0xe
+ 2452 00dd 3A        	.uleb128 0x3a
+ 2453 00de 0B        	.uleb128 0xb
+ 2454 00df 3B        	.uleb128 0x3b
+ 2455 00e0 0B        	.uleb128 0xb
+ 2456 00e1 49        	.uleb128 0x49
+ 2457 00e2 13        	.uleb128 0x13
+ 2458 00e3 38        	.uleb128 0x38
+ 2459 00e4 05        	.uleb128 0x5
+ 2460 00e5 00        	.byte0
+ 2461 00e6 00        	.byte0
+ 2462 00e7 14        	.uleb128 0x14
+ 2463 00e8 15        	.uleb128 0x15
+ 2464 00e9 00        	.byte0
+ 2465 00ea 27        	.uleb128 0x27
+ 2466 00eb 19        	.uleb128 0x19
+ 2467 00ec 00        	.byte0
+ 2468 00ed 00        	.byte0
+ 2469 00ee 15        	.uleb128 0x15
+ 2470 00ef 15        	.uleb128 0x15
+ 2471 00f0 01        	.byte0x1
+ 2472 00f1 27        	.uleb128 0x27
+ 2473 00f2 19        	.uleb128 0x19
+ 2474 00f3 49        	.uleb128 0x49
+ 2475 00f4 13        	.uleb128 0x13
+ 2476 00f5 01        	.uleb128 0x1
+ 2477 00f6 13        	.uleb128 0x13
+ 2478 00f7 00        	.byte0
+ 2479 00f8 00        	.byte0
+ 2480 00f9 16        	.uleb128 0x16
+ 2481 00fa 05        	.uleb128 0x5
+ 2482 00fb 00        	.byte0
+ 2483 00fc 49        	.uleb128 0x49
+ 2484 00fd 13        	.uleb128 0x13
+ 2485 00fe 00        	.byte0
+ 2486 00ff 00        	.byte0
+ 2487 0100 17        	.uleb128 0x17
+ 2488 0101 13        	.uleb128 0x13
+ 2489 0102 01        	.byte0x1
+ 2490 0103 03        	.uleb128 0x3
+ 2491 0104 0E        	.uleb128 0xe
+ 2492 0105 0B        	.uleb128 0xb
+ 2493 0106 05        	.uleb128 0x5
+ 2494 0107 3A        	.uleb128 0x3a
+ 2495 0108 0B        	.uleb128 0xb
+ 2496 0109 3B        	.uleb128 0x3b
+ 2497 010a 05        	.uleb128 0x5
+ 2498 010b 01        	.uleb128 0x1
+ 2499 010c 13        	.uleb128 0x13
+68K GAS   			page 54
+
+
+ 2500 010d 00        	.byte0
+ 2501 010e 00        	.byte0
+ 2502 010f 18        	.uleb128 0x18
+ 2503 0110 0D        	.uleb128 0xd
+ 2504 0111 00        	.byte0
+ 2505 0112 03        	.uleb128 0x3
+ 2506 0113 0E        	.uleb128 0xe
+ 2507 0114 3A        	.uleb128 0x3a
+ 2508 0115 0B        	.uleb128 0xb
+ 2509 0116 3B        	.uleb128 0x3b
+ 2510 0117 05        	.uleb128 0x5
+ 2511 0118 49        	.uleb128 0x49
+ 2512 0119 13        	.uleb128 0x13
+ 2513 011a 38        	.uleb128 0x38
+ 2514 011b 0B        	.uleb128 0xb
+ 2515 011c 00        	.byte0
+ 2516 011d 00        	.byte0
+ 2517 011e 19        	.uleb128 0x19
+ 2518 011f 0D        	.uleb128 0xd
+ 2519 0120 00        	.byte0
+ 2520 0121 03        	.uleb128 0x3
+ 2521 0122 0E        	.uleb128 0xe
+ 2522 0123 3A        	.uleb128 0x3a
+ 2523 0124 0B        	.uleb128 0xb
+ 2524 0125 3B        	.uleb128 0x3b
+ 2525 0126 05        	.uleb128 0x5
+ 2526 0127 49        	.uleb128 0x49
+ 2527 0128 13        	.uleb128 0x13
+ 2528 0129 38        	.uleb128 0x38
+ 2529 012a 05        	.uleb128 0x5
+ 2530 012b 00        	.byte0
+ 2531 012c 00        	.byte0
+ 2532 012d 1A        	.uleb128 0x1a
+ 2533 012e 13        	.uleb128 0x13
+ 2534 012f 01        	.byte0x1
+ 2535 0130 03        	.uleb128 0x3
+ 2536 0131 0E        	.uleb128 0xe
+ 2537 0132 0B        	.uleb128 0xb
+ 2538 0133 0B        	.uleb128 0xb
+ 2539 0134 3A        	.uleb128 0x3a
+ 2540 0135 0B        	.uleb128 0xb
+ 2541 0136 3B        	.uleb128 0x3b
+ 2542 0137 05        	.uleb128 0x5
+ 2543 0138 01        	.uleb128 0x1
+ 2544 0139 13        	.uleb128 0x13
+ 2545 013a 00        	.byte0
+ 2546 013b 00        	.byte0
+ 2547 013c 1B        	.uleb128 0x1b
+ 2548 013d 13        	.uleb128 0x13
+ 2549 013e 01        	.byte0x1
+ 2550 013f 0B        	.uleb128 0xb
+ 2551 0140 0B        	.uleb128 0xb
+ 2552 0141 3A        	.uleb128 0x3a
+ 2553 0142 0B        	.uleb128 0xb
+ 2554 0143 3B        	.uleb128 0x3b
+ 2555 0144 05        	.uleb128 0x5
+ 2556 0145 01        	.uleb128 0x1
+68K GAS   			page 55
+
+
+ 2557 0146 13        	.uleb128 0x13
+ 2558 0147 00        	.byte0
+ 2559 0148 00        	.byte0
+ 2560 0149 1C        	.uleb128 0x1c
+ 2561 014a 17        	.uleb128 0x17
+ 2562 014b 01        	.byte0x1
+ 2563 014c 0B        	.uleb128 0xb
+ 2564 014d 0B        	.uleb128 0xb
+ 2565 014e 3A        	.uleb128 0x3a
+ 2566 014f 0B        	.uleb128 0xb
+ 2567 0150 3B        	.uleb128 0x3b
+ 2568 0151 05        	.uleb128 0x5
+ 2569 0152 01        	.uleb128 0x1
+ 2570 0153 13        	.uleb128 0x13
+ 2571 0154 00        	.byte0
+ 2572 0155 00        	.byte0
+ 2573 0156 1D        	.uleb128 0x1d
+ 2574 0157 0D        	.uleb128 0xd
+ 2575 0158 00        	.byte0
+ 2576 0159 03        	.uleb128 0x3
+ 2577 015a 0E        	.uleb128 0xe
+ 2578 015b 3A        	.uleb128 0x3a
+ 2579 015c 0B        	.uleb128 0xb
+ 2580 015d 3B        	.uleb128 0x3b
+ 2581 015e 05        	.uleb128 0x5
+ 2582 015f 49        	.uleb128 0x49
+ 2583 0160 13        	.uleb128 0x13
+ 2584 0161 00        	.byte0
+ 2585 0162 00        	.byte0
+ 2586 0163 1E        	.uleb128 0x1e
+ 2587 0164 15        	.uleb128 0x15
+ 2588 0165 01        	.byte0x1
+ 2589 0166 27        	.uleb128 0x27
+ 2590 0167 19        	.uleb128 0x19
+ 2591 0168 01        	.uleb128 0x1
+ 2592 0169 13        	.uleb128 0x13
+ 2593 016a 00        	.byte0
+ 2594 016b 00        	.byte0
+ 2595 016c 1F        	.uleb128 0x1f
+ 2596 016d 34        	.uleb128 0x34
+ 2597 016e 00        	.byte0
+ 2598 016f 03        	.uleb128 0x3
+ 2599 0170 0E        	.uleb128 0xe
+ 2600 0171 3A        	.uleb128 0x3a
+ 2601 0172 0B        	.uleb128 0xb
+ 2602 0173 3B        	.uleb128 0x3b
+ 2603 0174 05        	.uleb128 0x5
+ 2604 0175 49        	.uleb128 0x49
+ 2605 0176 13        	.uleb128 0x13
+ 2606 0177 3F        	.uleb128 0x3f
+ 2607 0178 19        	.uleb128 0x19
+ 2608 0179 3C        	.uleb128 0x3c
+ 2609 017a 19        	.uleb128 0x19
+ 2610 017b 00        	.byte0
+ 2611 017c 00        	.byte0
+ 2612 017d 20        	.uleb128 0x20
+ 2613 017e 34        	.uleb128 0x34
+68K GAS   			page 56
+
+
+ 2614 017f 00        	.byte0
+ 2615 0180 03        	.uleb128 0x3
+ 2616 0181 0E        	.uleb128 0xe
+ 2617 0182 3A        	.uleb128 0x3a
+ 2618 0183 0B        	.uleb128 0xb
+ 2619 0184 3B        	.uleb128 0x3b
+ 2620 0185 0B        	.uleb128 0xb
+ 2621 0186 49        	.uleb128 0x49
+ 2622 0187 13        	.uleb128 0x13
+ 2623 0188 3F        	.uleb128 0x3f
+ 2624 0189 19        	.uleb128 0x19
+ 2625 018a 3C        	.uleb128 0x3c
+ 2626 018b 19        	.uleb128 0x19
+ 2627 018c 00        	.byte0
+ 2628 018d 00        	.byte0
+ 2629 018e 21        	.uleb128 0x21
+ 2630 018f 13        	.uleb128 0x13
+ 2631 0190 01        	.byte0x1
+ 2632 0191 0B        	.uleb128 0xb
+ 2633 0192 06        	.uleb128 0x6
+ 2634 0193 3A        	.uleb128 0x3a
+ 2635 0194 0B        	.uleb128 0xb
+ 2636 0195 3B        	.uleb128 0x3b
+ 2637 0196 0B        	.uleb128 0xb
+ 2638 0197 01        	.uleb128 0x1
+ 2639 0198 13        	.uleb128 0x13
+ 2640 0199 00        	.byte0
+ 2641 019a 00        	.byte0
+ 2642 019b 22        	.uleb128 0x22
+ 2643 019c 0D        	.uleb128 0xd
+ 2644 019d 00        	.byte0
+ 2645 019e 03        	.uleb128 0x3
+ 2646 019f 0E        	.uleb128 0xe
+ 2647 01a0 3A        	.uleb128 0x3a
+ 2648 01a1 0B        	.uleb128 0xb
+ 2649 01a2 3B        	.uleb128 0x3b
+ 2650 01a3 0B        	.uleb128 0xb
+ 2651 01a4 49        	.uleb128 0x49
+ 2652 01a5 13        	.uleb128 0x13
+ 2653 01a6 38        	.uleb128 0x38
+ 2654 01a7 06        	.uleb128 0x6
+ 2655 01a8 00        	.byte0
+ 2656 01a9 00        	.byte0
+ 2657 01aa 23        	.uleb128 0x23
+ 2658 01ab 21        	.uleb128 0x21
+ 2659 01ac 00        	.byte0
+ 2660 01ad 49        	.uleb128 0x49
+ 2661 01ae 13        	.uleb128 0x13
+ 2662 01af 2F        	.uleb128 0x2f
+ 2663 01b0 06        	.uleb128 0x6
+ 2664 01b1 00        	.byte0
+ 2665 01b2 00        	.byte0
+ 2666 01b3 24        	.uleb128 0x24
+ 2667 01b4 34        	.uleb128 0x34
+ 2668 01b5 00        	.byte0
+ 2669 01b6 47        	.uleb128 0x47
+ 2670 01b7 13        	.uleb128 0x13
+68K GAS   			page 57
+
+
+ 2671 01b8 3A        	.uleb128 0x3a
+ 2672 01b9 0B        	.uleb128 0xb
+ 2673 01ba 3B        	.uleb128 0x3b
+ 2674 01bb 0B        	.uleb128 0xb
+ 2675 01bc 02        	.uleb128 0x2
+ 2676 01bd 18        	.uleb128 0x18
+ 2677 01be 00        	.byte0
+ 2678 01bf 00        	.byte0
+ 2679 01c0 25        	.uleb128 0x25
+ 2680 01c1 2E        	.uleb128 0x2e
+ 2681 01c2 01        	.byte0x1
+ 2682 01c3 3F        	.uleb128 0x3f
+ 2683 01c4 19        	.uleb128 0x19
+ 2684 01c5 03        	.uleb128 0x3
+ 2685 01c6 0E        	.uleb128 0xe
+ 2686 01c7 3A        	.uleb128 0x3a
+ 2687 01c8 0B        	.uleb128 0xb
+ 2688 01c9 3B        	.uleb128 0x3b
+ 2689 01ca 05        	.uleb128 0x5
+ 2690 01cb 27        	.uleb128 0x27
+ 2691 01cc 19        	.uleb128 0x19
+ 2692 01cd 11        	.uleb128 0x11
+ 2693 01ce 01        	.uleb128 0x1
+ 2694 01cf 12        	.uleb128 0x12
+ 2695 01d0 06        	.uleb128 0x6
+ 2696 01d1 40        	.uleb128 0x40
+ 2697 01d2 18        	.uleb128 0x18
+ 2698 01d3 9642      	.uleb128 0x2116
+ 2699 01d5 19        	.uleb128 0x19
+ 2700 01d6 01        	.uleb128 0x1
+ 2701 01d7 13        	.uleb128 0x13
+ 2702 01d8 00        	.byte0
+ 2703 01d9 00        	.byte0
+ 2704 01da 26        	.uleb128 0x26
+ 2705 01db 05        	.uleb128 0x5
+ 2706 01dc 00        	.byte0
+ 2707 01dd 03        	.uleb128 0x3
+ 2708 01de 0E        	.uleb128 0xe
+ 2709 01df 3A        	.uleb128 0x3a
+ 2710 01e0 0B        	.uleb128 0xb
+ 2711 01e1 3B        	.uleb128 0x3b
+ 2712 01e2 05        	.uleb128 0x5
+ 2713 01e3 49        	.uleb128 0x49
+ 2714 01e4 13        	.uleb128 0x13
+ 2715 01e5 02        	.uleb128 0x2
+ 2716 01e6 18        	.uleb128 0x18
+ 2717 01e7 00        	.byte0
+ 2718 01e8 00        	.byte0
+ 2719 01e9 27        	.uleb128 0x27
+ 2720 01ea 34        	.uleb128 0x34
+ 2721 01eb 00        	.byte0
+ 2722 01ec 03        	.uleb128 0x3
+ 2723 01ed 0E        	.uleb128 0xe
+ 2724 01ee 3A        	.uleb128 0x3a
+ 2725 01ef 0B        	.uleb128 0xb
+ 2726 01f0 3B        	.uleb128 0x3b
+ 2727 01f1 05        	.uleb128 0x5
+68K GAS   			page 58
+
+
+ 2728 01f2 49        	.uleb128 0x49
+ 2729 01f3 13        	.uleb128 0x13
+ 2730 01f4 02        	.uleb128 0x2
+ 2731 01f5 18        	.uleb128 0x18
+ 2732 01f6 00        	.byte0
+ 2733 01f7 00        	.byte0
+ 2734 01f8 28        	.uleb128 0x28
+ 2735 01f9 2E        	.uleb128 0x2e
+ 2736 01fa 01        	.byte0x1
+ 2737 01fb 3F        	.uleb128 0x3f
+ 2738 01fc 19        	.uleb128 0x19
+ 2739 01fd 03        	.uleb128 0x3
+ 2740 01fe 0E        	.uleb128 0xe
+ 2741 01ff 3A        	.uleb128 0x3a
+ 2742 0200 0B        	.uleb128 0xb
+ 2743 0201 3B        	.uleb128 0x3b
+ 2744 0202 05        	.uleb128 0x5
+ 2745 0203 27        	.uleb128 0x27
+ 2746 0204 19        	.uleb128 0x19
+ 2747 0205 49        	.uleb128 0x49
+ 2748 0206 13        	.uleb128 0x13
+ 2749 0207 11        	.uleb128 0x11
+ 2750 0208 01        	.uleb128 0x1
+ 2751 0209 12        	.uleb128 0x12
+ 2752 020a 06        	.uleb128 0x6
+ 2753 020b 40        	.uleb128 0x40
+ 2754 020c 18        	.uleb128 0x18
+ 2755 020d 9742      	.uleb128 0x2117
+ 2756 020f 19        	.uleb128 0x19
+ 2757 0210 01        	.uleb128 0x1
+ 2758 0211 13        	.uleb128 0x13
+ 2759 0212 00        	.byte0
+ 2760 0213 00        	.byte0
+ 2761 0214 29        	.uleb128 0x29
+ 2762 0215 2E        	.uleb128 0x2e
+ 2763 0216 01        	.byte0x1
+ 2764 0217 3F        	.uleb128 0x3f
+ 2765 0218 19        	.uleb128 0x19
+ 2766 0219 03        	.uleb128 0x3
+ 2767 021a 0E        	.uleb128 0xe
+ 2768 021b 3A        	.uleb128 0x3a
+ 2769 021c 0B        	.uleb128 0xb
+ 2770 021d 3B        	.uleb128 0x3b
+ 2771 021e 05        	.uleb128 0x5
+ 2772 021f 27        	.uleb128 0x27
+ 2773 0220 19        	.uleb128 0x19
+ 2774 0221 49        	.uleb128 0x49
+ 2775 0222 13        	.uleb128 0x13
+ 2776 0223 11        	.uleb128 0x11
+ 2777 0224 01        	.uleb128 0x1
+ 2778 0225 12        	.uleb128 0x12
+ 2779 0226 06        	.uleb128 0x6
+ 2780 0227 40        	.uleb128 0x40
+ 2781 0228 18        	.uleb128 0x18
+ 2782 0229 9642      	.uleb128 0x2116
+ 2783 022b 19        	.uleb128 0x19
+ 2784 022c 01        	.uleb128 0x1
+68K GAS   			page 59
+
+
+ 2785 022d 13        	.uleb128 0x13
+ 2786 022e 00        	.byte0
+ 2787 022f 00        	.byte0
+ 2788 0230 2A        	.uleb128 0x2a
+ 2789 0231 2E        	.uleb128 0x2e
+ 2790 0232 01        	.byte0x1
+ 2791 0233 3F        	.uleb128 0x3f
+ 2792 0234 19        	.uleb128 0x19
+ 2793 0235 03        	.uleb128 0x3
+ 2794 0236 0E        	.uleb128 0xe
+ 2795 0237 3A        	.uleb128 0x3a
+ 2796 0238 0B        	.uleb128 0xb
+ 2797 0239 3B        	.uleb128 0x3b
+ 2798 023a 0B        	.uleb128 0xb
+ 2799 023b 27        	.uleb128 0x27
+ 2800 023c 19        	.uleb128 0x19
+ 2801 023d 49        	.uleb128 0x49
+ 2802 023e 13        	.uleb128 0x13
+ 2803 023f 11        	.uleb128 0x11
+ 2804 0240 01        	.uleb128 0x1
+ 2805 0241 12        	.uleb128 0x12
+ 2806 0242 06        	.uleb128 0x6
+ 2807 0243 40        	.uleb128 0x40
+ 2808 0244 18        	.uleb128 0x18
+ 2809 0245 9742      	.uleb128 0x2117
+ 2810 0247 19        	.uleb128 0x19
+ 2811 0248 01        	.uleb128 0x1
+ 2812 0249 13        	.uleb128 0x13
+ 2813 024a 00        	.byte0
+ 2814 024b 00        	.byte0
+ 2815 024c 2B        	.uleb128 0x2b
+ 2816 024d 05        	.uleb128 0x5
+ 2817 024e 00        	.byte0
+ 2818 024f 03        	.uleb128 0x3
+ 2819 0250 0E        	.uleb128 0xe
+ 2820 0251 3A        	.uleb128 0x3a
+ 2821 0252 0B        	.uleb128 0xb
+ 2822 0253 3B        	.uleb128 0x3b
+ 2823 0254 0B        	.uleb128 0xb
+ 2824 0255 49        	.uleb128 0x49
+ 2825 0256 13        	.uleb128 0x13
+ 2826 0257 02        	.uleb128 0x2
+ 2827 0258 18        	.uleb128 0x18
+ 2828 0259 00        	.byte0
+ 2829 025a 00        	.byte0
+ 2830 025b 2C        	.uleb128 0x2c
+ 2831 025c 34        	.uleb128 0x34
+ 2832 025d 00        	.byte0
+ 2833 025e 03        	.uleb128 0x3
+ 2834 025f 0E        	.uleb128 0xe
+ 2835 0260 3A        	.uleb128 0x3a
+ 2836 0261 0B        	.uleb128 0xb
+ 2837 0262 3B        	.uleb128 0x3b
+ 2838 0263 0B        	.uleb128 0xb
+ 2839 0264 49        	.uleb128 0x49
+ 2840 0265 13        	.uleb128 0x13
+ 2841 0266 02        	.uleb128 0x2
+68K GAS   			page 60
+
+
+ 2842 0267 18        	.uleb128 0x18
+ 2843 0268 00        	.byte0
+ 2844 0269 00        	.byte0
+ 2845 026a 2D        	.uleb128 0x2d
+ 2846 026b 2E        	.uleb128 0x2e
+ 2847 026c 01        	.byte0x1
+ 2848 026d 3F        	.uleb128 0x3f
+ 2849 026e 19        	.uleb128 0x19
+ 2850 026f 03        	.uleb128 0x3
+ 2851 0270 0E        	.uleb128 0xe
+ 2852 0271 3A        	.uleb128 0x3a
+ 2853 0272 0B        	.uleb128 0xb
+ 2854 0273 3B        	.uleb128 0x3b
+ 2855 0274 0B        	.uleb128 0xb
+ 2856 0275 27        	.uleb128 0x27
+ 2857 0276 19        	.uleb128 0x19
+ 2858 0277 49        	.uleb128 0x49
+ 2859 0278 13        	.uleb128 0x13
+ 2860 0279 11        	.uleb128 0x11
+ 2861 027a 01        	.uleb128 0x1
+ 2862 027b 12        	.uleb128 0x12
+ 2863 027c 06        	.uleb128 0x6
+ 2864 027d 40        	.uleb128 0x40
+ 2865 027e 18        	.uleb128 0x18
+ 2866 027f 9642      	.uleb128 0x2116
+ 2867 0281 19        	.uleb128 0x19
+ 2868 0282 01        	.uleb128 0x1
+ 2869 0283 13        	.uleb128 0x13
+ 2870 0284 00        	.byte0
+ 2871 0285 00        	.byte0
+ 2872 0286 2E        	.uleb128 0x2e
+ 2873 0287 2E        	.uleb128 0x2e
+ 2874 0288 01        	.byte0x1
+ 2875 0289 3F        	.uleb128 0x3f
+ 2876 028a 19        	.uleb128 0x19
+ 2877 028b 03        	.uleb128 0x3
+ 2878 028c 0E        	.uleb128 0xe
+ 2879 028d 3A        	.uleb128 0x3a
+ 2880 028e 0B        	.uleb128 0xb
+ 2881 028f 3B        	.uleb128 0x3b
+ 2882 0290 0B        	.uleb128 0xb
+ 2883 0291 27        	.uleb128 0x27
+ 2884 0292 19        	.uleb128 0x19
+ 2885 0293 49        	.uleb128 0x49
+ 2886 0294 13        	.uleb128 0x13
+ 2887 0295 11        	.uleb128 0x11
+ 2888 0296 01        	.uleb128 0x1
+ 2889 0297 12        	.uleb128 0x12
+ 2890 0298 06        	.uleb128 0x6
+ 2891 0299 40        	.uleb128 0x40
+ 2892 029a 18        	.uleb128 0x18
+ 2893 029b 9742      	.uleb128 0x2117
+ 2894 029d 19        	.uleb128 0x19
+ 2895 029e 00        	.byte0
+ 2896 029f 00        	.byte0
+ 2897 02a0 00        	.byte0
+ 2898               	.section.debug_aranges,"",@progbits
+68K GAS   			page 61
+
+
+ 2899 0000 0000 001C 	.long0x1c
+ 2900 0004 0002      	.word0x2
+ 2901 0006 0000 0000 	.long.Ldebug_info0
+ 2902 000a 04        	.byte0x4
+ 2903 000b 00        	.byte0
+ 2904 000c 0000      	.word0
+ 2905 000e 0000      	.word0
+ 2906 0010 0000 0000 	.long.Ltext0
+ 2907 0014 0000 0320 	.long.Letext0-.Ltext0
+ 2908 0018 0000 0000 	.long0
+ 2909 001c 0000 0000 	.long0
+ 2910               	.section.debug_line,"",@progbits
+ 2911               	.Ldebug_line0:
+ 2912 0000 0000 02A6 	.section.debug_str,"MS",@progbits,1
+ 2912      0002 0000 
+ 2912      0212 0201 
+ 2912      FB0E 0D00 
+ 2912      0101 0101 
+ 2913               	.LASF160:
+ 2914 0000 7265 7475 	.string"return_code"
+ 2914      726E 5F63 
+ 2914      6F64 6500 
+ 2915               	.LASF20:
+ 2916 000c 5F6E 616D 	.string"_name"
+ 2916      6500 
+ 2917               	.LASF54:
+ 2918 0012 5F6F 6E5F 	.string"_on_exit_args"
+ 2918      6578 6974 
+ 2918      5F61 7267 
+ 2918      7300 
+ 2919               	.LASF21:
+ 2920 0020 5F54 6872 	.string"_Thread_queue_Heads"
+ 2920      6561 645F 
+ 2920      7175 6575 
+ 2920      655F 4865 
+ 2920      6164 7300 
+ 2921               	.LASF142:
+ 2922 0034 5F64 6179 	.string"_daylight"
+ 2922      6C69 6768 
+ 2922      7400 
+ 2923               	.LASF119:
+ 2924 003e 5F77 6374 	.string"_wctomb_state"
+ 2924      6F6D 625F 
+ 2924      7374 6174 
+ 2924      6500 
+ 2925               	.LASF157:
+ 2926 004c 6D65 7373 	.string"message"
+ 2926      6167 6500 
+ 2927               	.LASF116:
+ 2928 0054 5F72 3438 	.string"_r48"
+ 2928      00
+ 2929               	.LASF167:
+ 2930 0059 4346 455F 	.string"CFE_PSP_InitProcessorReservedMemory"
+ 2930      5053 505F 
+ 2930      496E 6974 
+ 2930      5072 6F63 
+ 2930      6573 736F 
+68K GAS   			page 62
+
+
+ 2931               	.LASF121:
+ 2932 007d 5F73 6967 	.string"_signal_buf"
+ 2932      6E61 6C5F 
+ 2932      6275 6600 
+ 2933               	.LASF14:
+ 2934 0089 756E 7369 	.string"unsigned int"
+ 2934      676E 6564 
+ 2934      2069 6E74 
+ 2934      00
+ 2935               	.LASF68:
+ 2936 0096 5F6C 6266 	.string"_lbfsize"
+ 2936      7369 7A65 
+ 2936      00
+ 2937               	.LASF66:
+ 2938 009f 5F66 6C61 	.string"_flags"
+ 2938      6773 00
+ 2939               	.LASF25:
+ 2940 00a6 5F51 7565 	.string"_Queue"
+ 2940      7565 00
+ 2941               	.LASF83:
+ 2942 00ad 5F65 7272 	.string"_errno"
+ 2942      6E6F 00
+ 2943               	.LASF163:
+ 2944 00b4 4346 455F 	.string"CFE_PSP_GetCFETextSegmentInfo"
+ 2944      5053 505F 
+ 2944      4765 7443 
+ 2944      4645 5465 
+ 2944      7874 5365 
+ 2945               	.LASF29:
+ 2946 00d2 5F4C 4F43 	.string"_LOCK_RECURSIVE_T"
+ 2946      4B5F 5245 
+ 2946      4355 5253 
+ 2946      4956 455F 
+ 2946      5400 
+ 2947               	.LASF70:
+ 2948 00e4 5F72 6561 	.string"_read"
+ 2948      6400 
+ 2949               	.LASF123:
+ 2950 00ea 5F6D 6272 	.string"_mbrlen_state"
+ 2950      6C65 6E5F 
+ 2950      7374 6174 
+ 2950      6500 
+ 2951               	.LASF189:
+ 2952 00f8 474E 5520 	.string"GNU C11 7.3.0 20180125 (RTEMS 5, RSB d2b25d131d55adcb38219f2cd8cbec2436ee78ab, Newlib 3.0.0) -malign-int -mcpu=528x -g -O0 -fomit-frame-pointer"
+ 2952      4331 3120 
+ 2952      372E 332E 
+ 2952      3020 3230 
+ 2952      3138 3031 
+ 2953               	.LASF85:
+ 2954 0188 5F73 7464 	.string"_stdout"
+ 2954      6F75 7400 
+ 2955               	.LASF75:
+ 2956 0190 5F6E 6275 	.string"_nbuf"
+ 2956      6600 
+ 2957               	.LASF18:
+ 2958 0196 5F68 6561 	.string"_heads"
+ 2958      6473 00
+68K GAS   			page 63
+
+
+ 2959               	.LASF11:
+ 2960 019d 5F66 706F 	.string"_fpos_t"
+ 2960      735F 7400 
+ 2961               	.LASF61:
+ 2962 01a5 5F66 6E73 	.string"_fns"
+ 2962      00
+ 2963               	.LASF69:
+ 2964 01aa 5F63 6F6F 	.string"_cookie"
+ 2964      6B69 6500 
+ 2965               	.LASF150:
+ 2966 01b2 4344 534D 	.string"CDSMemory"
+ 2966      656D 6F72 
+ 2966      7900 
+ 2967               	.LASF39:
+ 2968 01bc 5F42 6967 	.string"_Bigint"
+ 2968      696E 7400 
+ 2969               	.LASF138:
+ 2970 01c4 7569 6E74 	.string"uint8"
+ 2970      3800 
+ 2971               	.LASF51:
+ 2972 01ca 5F5F 746D 	.string"__tm_wday"
+ 2972      5F77 6461 
+ 2972      7900 
+ 2973               	.LASF93:
+ 2974 01d4 5F72 6573 	.string"_result"
+ 2974      756C 7400 
+ 2975               	.LASF47:
+ 2976 01dc 5F5F 746D 	.string"__tm_hour"
+ 2976      5F68 6F75 
+ 2976      7200 
+ 2977               	.LASF154:
+ 2978 01e6 4D65 6D53 	.string"MemStatus"
+ 2978      7461 7475 
+ 2978      7300 
+ 2979               	.LASF153:
+ 2980 01f0 4346 455F 	.string"CFE_PSP_ReservedMemoryPtr"
+ 2980      5053 505F 
+ 2980      5265 7365 
+ 2980      7276 6564 
+ 2980      4D65 6D6F 
+ 2981               	.LASF34:
+ 2982 020a 5F5F 636F 	.string"__count"
+ 2982      756E 7400 
+ 2983               	.LASF46:
+ 2984 0212 5F5F 746D 	.string"__tm_min"
+ 2984      5F6D 696E 
+ 2984      00
+ 2985               	.LASF134:
+ 2986 021b 5F69 6D70 	.string"_impure_ptr"
+ 2986      7572 655F 
+ 2986      7074 7200 
+ 2987               	.LASF137:
+ 2988 0227 696E 7433 	.string"int32"
+ 2988      3200 
+ 2989               	.LASF129:
+ 2990 022d 5F6E 6578 	.string"_nextf"
+ 2990      7466 00
+68K GAS   			page 64
+
+
+ 2991               	.LASF106:
+ 2992 0234 5F72 616E 	.string"_rand48"
+ 2992      6434 3800 
+ 2993               	.LASF159:
+ 2994 023c 5369 7A65 	.string"SizeOfCFESegment"
+ 2994      4F66 4346 
+ 2994      4553 6567 
+ 2994      6D65 6E74 
+ 2994      00
+ 2995               	.LASF26:
+ 2996 024d 5F4D 7574 	.string"_Mutex_recursive_Control"
+ 2996      6578 5F72 
+ 2996      6563 7572 
+ 2996      7369 7665 
+ 2996      5F43 6F6E 
+ 2997               	.LASF94:
+ 2998 0266 5F72 6573 	.string"_result_k"
+ 2998      756C 745F 
+ 2998      6B00 
+ 2999               	.LASF7:
+ 3000 0270 6C6F 6E67 	.string"long long unsigned int"
+ 3000      206C 6F6E 
+ 3000      6720 756E 
+ 3000      7369 676E 
+ 3000      6564 2069 
+ 3001               	.LASF112:
+ 3002 0287 5F61 7363 	.string"_asctime_buf"
+ 3002      7469 6D65 
+ 3002      5F62 7566 
+ 3002      00
+ 3003               	.LASF65:
+ 3004 0294 5F5F 7346 	.string"__sFILE"
+ 3004      494C 4500 
+ 3005               	.LASF43:
+ 3006 029c 5F77 6473 	.string"_wds"
+ 3006      00
+ 3007               	.LASF183:
+ 3008 02a1 436F 7079 	.string"CopyPtr"
+ 3008      5074 7200 
+ 3009               	.LASF102:
+ 3010 02a9 5F5F 4649 	.string"__FILE"
+ 3010      4C45 00
+ 3011               	.LASF156:
+ 3012 02b0 776B 7370 	.string"wkspace_argv"
+ 3012      6163 655F 
+ 3012      6172 6776 
+ 3012      00
+ 3013               	.LASF77:
+ 3014 02bd 5F6F 6666 	.string"_offset"
+ 3014      7365 7400 
+ 3015               	.LASF88:
+ 3016 02c5 5F65 6D65 	.string"_emergency"
+ 3016      7267 656E 
+ 3016      6379 00
+ 3017               	.LASF24:
+ 3018 02d0 5F4D 7574 	.string"_Mutex_Control"
+ 3018      6578 5F43 
+68K GAS   			page 65
+
+
+ 3018      6F6E 7472 
+ 3018      6F6C 00
+ 3019               	.LASF17:
+ 3020 02df 5F4C 6F63 	.string"_Lock"
+ 3020      6B00 
+ 3021               	.LASF19:
+ 3022 02e5 5F6F 776E 	.string"_owner"
+ 3022      6572 00
+ 3023               	.LASF45:
+ 3024 02ec 5F5F 746D 	.string"__tm_sec"
+ 3024      5F73 6563 
+ 3024      00
+ 3025               	.LASF185:
+ 3026 02f5 5074 7254 	.string"PtrToDataToWrite"
+ 3026      6F44 6174 
+ 3026      6154 6F57 
+ 3026      7269 7465 
+ 3026      00
+ 3027               	.LASF140:
+ 3028 0306 7375 626F 	.string"suboptarg"
+ 3028      7074 6172 
+ 3028      6700 
+ 3029               	.LASF52:
+ 3030 0310 5F5F 746D 	.string"__tm_yday"
+ 3030      5F79 6461 
+ 3030      7900 
+ 3031               	.LASF87:
+ 3032 031a 5F69 6E63 	.string"_inc"
+ 3032      00
+ 3033               	.LASF60:
+ 3034 031f 5F69 6E64 	.string"_ind"
+ 3034      00
+ 3035               	.LASF184:
+ 3036 0324 4346 455F 	.string"CFE_PSP_WriteToCDS"
+ 3036      5053 505F 
+ 3036      5772 6974 
+ 3036      6554 6F43 
+ 3036      4453 00
+ 3037               	.LASF40:
+ 3038 0337 5F6E 6578 	.string"_next"
+ 3038      7400 
+ 3039               	.LASF125:
+ 3040 033d 5F6D 6273 	.string"_mbsrtowcs_state"
+ 3040      7274 6F77 
+ 3040      6373 5F73 
+ 3040      7461 7465 
+ 3040      00
+ 3041               	.LASF143:
+ 3042 034e 5F74 7A6E 	.string"_tzname"
+ 3042      616D 6500 
+ 3043               	.LASF187:
+ 3044 0356 4346 455F 	.string"CFE_PSP_GetCDSSize"
+ 3044      5053 505F 
+ 3044      4765 7443 
+ 3044      4453 5369 
+ 3044      7A65 00
+ 3045               	.LASF35:
+68K GAS   			page 66
+
+
+ 3046 0369 5F5F 7661 	.string"__value"
+ 3046      6C75 6500 
+ 3047               	.LASF95:
+ 3048 0371 5F70 3573 	.string"_p5s"
+ 3048      00
+ 3049               	.LASF127:
+ 3050 0376 5F77 6373 	.string"_wcsrtombs_state"
+ 3050      7274 6F6D 
+ 3050      6273 5F73 
+ 3050      7461 7465 
+ 3050      00
+ 3051               	.LASF117:
+ 3052 0387 5F6D 626C 	.string"_mblen_state"
+ 3052      656E 5F73 
+ 3052      7461 7465 
+ 3052      00
+ 3053               	.LASF27:
+ 3054 0394 5F4D 7574 	.string"_Mutex"
+ 3054      6578 00
+ 3055               	.LASF23:
+ 3056 039b 6368 6172 	.string"char"
+ 3056      00
+ 3057               	.LASF48:
+ 3058 03a0 5F5F 746D 	.string"__tm_mday"
+ 3058      5F6D 6461 
+ 3058      7900 
+ 3059               	.LASF100:
+ 3060 03aa 5F73 6967 	.string"_sig_func"
+ 3060      5F66 756E 
+ 3060      6300 
+ 3061               	.LASF124:
+ 3062 03b4 5F6D 6272 	.string"_mbrtowc_state"
+ 3062      746F 7763 
+ 3062      5F73 7461 
+ 3062      7465 00
+ 3063               	.LASF37:
+ 3064 03c3 5F66 6C6F 	.string"_flock_t"
+ 3064      636B 5F74 
+ 3064      00
+ 3065               	.LASF177:
+ 3066 03cc 5074 7254 	.string"PtrToResetArea"
+ 3066      6F52 6573 
+ 3066      6574 4172 
+ 3066      6561 00
+ 3067               	.LASF32:
+ 3068 03db 5F5F 7763 	.string"__wch"
+ 3068      6800 
+ 3069               	.LASF105:
+ 3070 03e1 5F69 6F62 	.string"_iobs"
+ 3070      7300 
+ 3071               	.LASF73:
+ 3072 03e7 5F63 6C6F 	.string"_close"
+ 3072      7365 00
+ 3073               	.LASF91:
+ 3074 03ee 5F5F 7364 	.string"__sdidinit"
+ 3074      6964 696E 
+ 3074      6974 00
+68K GAS   			page 67
+
+
+ 3075               	.LASF161:
+ 3076 03f9 5374 6172 	.string"StartAddress"
+ 3076      7441 6464 
+ 3076      7265 7373 
+ 3076      00
+ 3077               	.LASF141:
+ 3078 0406 5F74 696D 	.string"_timezone"
+ 3078      657A 6F6E 
+ 3078      6500 
+ 3079               	.LASF84:
+ 3080 0410 5F73 7464 	.string"_stdin"
+ 3080      696E 00
+ 3081               	.LASF114:
+ 3082 0417 5F67 616D 	.string"_gamma_signgam"
+ 3082      6D61 5F73 
+ 3082      6967 6E67 
+ 3082      616D 00
+ 3083               	.LASF6:
+ 3084 0426 6C6F 6E67 	.string"long long int"
+ 3084      206C 6F6E 
+ 3084      6720 696E 
+ 3084      7400 
+ 3085               	.LASF15:
+ 3086 0434 5F54 6963 	.string"_Ticket_lock_Control"
+ 3086      6B65 745F 
+ 3086      6C6F 636B 
+ 3086      5F43 6F6E 
+ 3086      7472 6F6C 
+ 3087               	.LASF63:
+ 3088 0449 5F62 6173 	.string"_base"
+ 3088      6500 
+ 3089               	.LASF170:
+ 3090 044f 5074 7254 	.string"PtrToVolDisk"
+ 3090      6F56 6F6C 
+ 3090      4469 736B 
+ 3090      00
+ 3091               	.LASF96:
+ 3092 045c 5F66 7265 	.string"_freelist"
+ 3092      656C 6973 
+ 3092      7400 
+ 3093               	.LASF108:
+ 3094 0466 5F6D 756C 	.string"_mult"
+ 3094      7400 
+ 3095               	.LASF38:
+ 3096 046c 5F5F 554C 	.string"__ULong"
+ 3096      6F6E 6700 
+ 3097               	.LASF174:
+ 3098 0474 5074 7254 	.string"PtrToUserArea"
+ 3098      6F55 7365 
+ 3098      7241 7265 
+ 3098      6100 
+ 3099               	.LASF144:
+ 3100 0482 6273 705F 	.string"bsp_reset_type"
+ 3100      7265 7365 
+ 3100      745F 7479 
+ 3100      7065 00
+ 3101               	.LASF126:
+68K GAS   			page 68
+
+
+ 3102 0491 5F77 6372 	.string"_wcrtomb_state"
+ 3102      746F 6D62 
+ 3102      5F73 7461 
+ 3102      7465 00
+ 3103               	.LASF67:
+ 3104 04a0 5F66 696C 	.string"_file"
+ 3104      6500 
+ 3105               	.LASF28:
+ 3106 04a6 5F6E 6573 	.string"_nest_level"
+ 3106      745F 6C65 
+ 3106      7665 6C00 
+ 3107               	.LASF191:
+ 3108 04b2 2F68 6F6D 	.string"/home/simulink/cFS_FreeRTOS_seL4/build/cpu1/cfe/psp"
+ 3108      652F 7369 
+ 3108      6D75 6C69 
+ 3108      6E6B 2F63 
+ 3108      4653 5F46 
+ 3109               	.LASF92:
+ 3110 04e6 5F5F 636C 	.string"__cleanup"
+ 3110      6561 6E75 
+ 3110      7000 
+ 3111               	.LASF36:
+ 3112 04f0 5F6D 6273 	.string"_mbstate_t"
+ 3112      7461 7465 
+ 3112      5F74 00
+ 3113               	.LASF55:
+ 3114 04fb 5F66 6E61 	.string"_fnargs"
+ 3114      7267 7300 
+ 3115               	.LASF139:
+ 3116 0503 7569 6E74 	.string"uint32"
+ 3116      3332 00
+ 3117               	.LASF53:
+ 3118 050a 5F5F 746D 	.string"__tm_isdst"
+ 3118      5F69 7364 
+ 3118      7374 00
+ 3119               	.LASF168:
+ 3120 0515 5265 7374 	.string"RestartType"
+ 3120      6172 7454 
+ 3120      7970 6500 
+ 3121               	.LASF166:
+ 3122 0521 5369 7A65 	.string"SizeOfKernelSegment"
+ 3122      4F66 4B65 
+ 3122      726E 656C 
+ 3122      5365 676D 
+ 3122      656E 7400 
+ 3123               	.LASF136:
+ 3124 0535 5F67 6C6F 	.string"_global_atexit"
+ 3124      6261 6C5F 
+ 3124      6174 6578 
+ 3124      6974 00
+ 3125               	.LASF128:
+ 3126 0544 5F68 5F65 	.string"_h_errno"
+ 3126      7272 6E6F 
+ 3126      00
+ 3127               	.LASF158:
+ 3128 054d 5074 7254 	.string"PtrToCFESegment"
+ 3128      6F43 4645 
+68K GAS   			page 69
+
+
+ 3128      5365 676D 
+ 3128      656E 7400 
+ 3129               	.LASF188:
+ 3130 055d 5369 7A65 	.string"SizeOfCDS"
+ 3130      4F66 4344 
+ 3130      5300 
+ 3131               	.LASF182:
+ 3132 0567 4E75 6D42 	.string"NumBytes"
+ 3132      7974 6573 
+ 3132      00
+ 3133               	.LASF49:
+ 3134 0570 5F5F 746D 	.string"__tm_mon"
+ 3134      5F6D 6F6E 
+ 3134      00
+ 3135               	.LASF9:
+ 3136 0579 5F5F 696E 	.string"__int64_t"
+ 3136      7436 345F 
+ 3136      7400 
+ 3137               	.LASF8:
+ 3138 0583 6C6F 6E67 	.string"long double"
+ 3138      2064 6F75 
+ 3138      626C 6500 
+ 3139               	.LASF165:
+ 3140 058f 5074 7254 	.string"PtrToKernelSegment"
+ 3140      6F4B 6572 
+ 3140      6E65 6C53 
+ 3140      6567 6D65 
+ 3140      6E74 00
+ 3141               	.LASF22:
+ 3142 05a2 5F54 6872 	.string"_Thread_Control"
+ 3142      6561 645F 
+ 3142      436F 6E74 
+ 3142      726F 6C00 
+ 3143               	.LASF152:
+ 3144 05b2 4346 455F 	.string"CFE_PSP_ReservedMemory_t"
+ 3144      5053 505F 
+ 3144      5265 7365 
+ 3144      7276 6564 
+ 3144      4D65 6D6F 
+ 3145               	.LASF71:
+ 3146 05cb 5F77 7269 	.string"_write"
+ 3146      7465 00
+ 3147               	.LASF149:
+ 3148 05d2 566F 6C61 	.string"VolatileDiskMemory"
+ 3148      7469 6C65 
+ 3148      4469 736B 
+ 3148      4D65 6D6F 
+ 3148      7279 00
+ 3149               	.LASF59:
+ 3150 05e5 5F61 7465 	.string"_atexit"
+ 3150      7869 7400 
+ 3151               	.LASF80:
+ 3152 05ed 5F6D 6273 	.string"_mbstate"
+ 3152      7461 7465 
+ 3152      00
+ 3153               	.LASF2:
+ 3154 05f6 7368 6F72 	.string"short int"
+68K GAS   			page 70
+
+
+ 3154      7420 696E 
+ 3154      7400 
+ 3155               	.LASF4:
+ 3156 0600 6C6F 6E67 	.string"long int"
+ 3156      2069 6E74 
+ 3156      00
+ 3157               	.LASF181:
+ 3158 0609 4344 534F 	.string"CDSOffset"
+ 3158      6666 7365 
+ 3158      7400 
+ 3159               	.LASF133:
+ 3160 0613 5F5F 7366 	.string"__sf"
+ 3160      00
+ 3161               	.LASF42:
+ 3162 0618 5F73 6967 	.string"_sign"
+ 3162      6E00 
+ 3163               	.LASF78:
+ 3164 061e 5F64 6174 	.string"_data"
+ 3164      6100 
+ 3165               	.LASF33:
+ 3166 0624 5F5F 7763 	.string"__wchb"
+ 3166      6862 00
+ 3167               	.LASF135:
+ 3168 062b 5F67 6C6F 	.string"_global_impure_ptr"
+ 3168      6261 6C5F 
+ 3168      696D 7075 
+ 3168      7265 5F70 
+ 3168      7472 00
+ 3169               	.LASF50:
+ 3170 063e 5F5F 746D 	.string"__tm_year"
+ 3170      5F79 6561 
+ 3170      7200 
+ 3171               	.LASF113:
+ 3172 0648 5F6C 6F63 	.string"_localtime_buf"
+ 3172      616C 7469 
+ 3172      6D65 5F62 
+ 3172      7566 00
+ 3173               	.LASF131:
+ 3174 0657 5F75 6E75 	.string"_unused"
+ 3174      7365 6400 
+ 3175               	.LASF169:
+ 3176 065f 4346 455F 	.string"CFE_PSP_GetVolatileDiskMem"
+ 3176      5053 505F 
+ 3176      4765 7456 
+ 3176      6F6C 6174 
+ 3176      696C 6544 
+ 3177               	.LASF99:
+ 3178 067a 5F6E 6577 	.string"_new"
+ 3178      00
+ 3179               	.LASF97:
+ 3180 067f 5F63 7674 	.string"_cvtlen"
+ 3180      6C65 6E00 
+ 3181               	.LASF41:
+ 3182 0687 5F6D 6178 	.string"_maxwds"
+ 3182      7764 7300 
+ 3183               	.LASF120:
+ 3184 068f 5F6C 3634 	.string"_l64a_buf"
+68K GAS   			page 71
+
+
+ 3184      615F 6275 
+ 3184      6600 
+ 3185               	.LASF171:
+ 3186 0699 5369 7A65 	.string"SizeOfVolDisk"
+ 3186      4F66 566F 
+ 3186      6C44 6973 
+ 3186      6B00 
+ 3187               	.LASF76:
+ 3188 06a7 5F62 6C6B 	.string"_blksize"
+ 3188      7369 7A65 
+ 3188      00
+ 3189               	.LASF44:
+ 3190 06b0 5F5F 746D 	.string"__tm"
+ 3190      00
+ 3191               	.LASF79:
+ 3192 06b5 5F6C 6F63 	.string"_lock"
+ 3192      6B00 
+ 3193               	.LASF186:
+ 3194 06bb 4346 455F 	.string"CFE_PSP_MemReport"
+ 3194      5053 505F 
+ 3194      4D65 6D52 
+ 3194      6570 6F72 
+ 3194      7400 
+ 3195               	.LASF5:
+ 3196 06cd 6C6F 6E67 	.string"long unsigned int"
+ 3196      2075 6E73 
+ 3196      6967 6E65 
+ 3196      6420 696E 
+ 3196      7400 
+ 3197               	.LASF104:
+ 3198 06df 5F6E 696F 	.string"_niobs"
+ 3198      6273 00
+ 3199               	.LASF31:
+ 3200 06e6 7769 6E74 	.string"wint_t"
+ 3200      5F74 00
+ 3201               	.LASF179:
+ 3202 06ed 4346 455F 	.string"CFE_PSP_ReadFromCDS"
+ 3202      5053 505F 
+ 3202      5265 6164 
+ 3202      4672 6F6D 
+ 3202      4344 5300 
+ 3203               	.LASF56:
+ 3204 0701 5F64 736F 	.string"_dso_handle"
+ 3204      5F68 616E 
+ 3204      646C 6500 
+ 3205               	.LASF16:
+ 3206 070d 5F54 6872 	.string"_Thread_queue_Queue"
+ 3206      6561 645F 
+ 3206      7175 6575 
+ 3206      655F 5175 
+ 3206      6575 6500 
+ 3207               	.LASF98:
+ 3208 0721 5F63 7674 	.string"_cvtbuf"
+ 3208      6275 6600 
+ 3209               	.LASF1:
+ 3210 0729 756E 7369 	.string"unsigned char"
+ 3210      676E 6564 
+68K GAS   			page 72
+
+
+ 3210      2063 6861 
+ 3210      7200 
+ 3211               	.LASF178:
+ 3212 0737 5369 7A65 	.string"SizeOfResetArea"
+ 3212      4F66 5265 
+ 3212      7365 7441 
+ 3212      7265 6100 
+ 3213               	.LASF172:
+ 3214 0747 5465 6D70 	.string"TempPointer"
+ 3214      506F 696E 
+ 3214      7465 7200 
+ 3215               	.LASF122:
+ 3216 0753 5F67 6574 	.string"_getdate_err"
+ 3216      6461 7465 
+ 3216      5F65 7272 
+ 3216      00
+ 3217               	.LASF109:
+ 3218 0760 5F61 6464 	.string"_add"
+ 3218      00
+ 3219               	.LASF164:
+ 3220 0765 4346 455F 	.string"CFE_PSP_GetKernelTextSegmentInfo"
+ 3220      5053 505F 
+ 3220      4765 744B 
+ 3220      6572 6E65 
+ 3220      6C54 6578 
+ 3221               	.LASF62:
+ 3222 0786 5F5F 7362 	.string"__sbuf"
+ 3222      7566 00
+ 3223               	.LASF103:
+ 3224 078d 5F67 6C75 	.string"_glue"
+ 3224      6500 
+ 3225               	.LASF190:
+ 3226 0793 2F68 6F6D 	.string"/home/simulink/cFS_FreeRTOS_seL4/psp/fsw/mcf5235-rtems/src/cfe_psp_memory.c"
+ 3226      652F 7369 
+ 3226      6D75 6C69 
+ 3226      6E6B 2F63 
+ 3226      4653 5F46 
+ 3227               	.LASF101:
+ 3228 07df 5F5F 7367 	.string"__sglue"
+ 3228      6C75 6500 
+ 3229               	.LASF162:
+ 3230 07e7 456E 6441 	.string"EndAddress"
+ 3230      6464 7265 
+ 3230      7373 00
+ 3231               	.LASF111:
+ 3232 07f2 5F73 7472 	.string"_strtok_last"
+ 3232      746F 6B5F 
+ 3232      6C61 7374 
+ 3232      00
+ 3233               	.LASF118:
+ 3234 07ff 5F6D 6274 	.string"_mbtowc_state"
+ 3234      6F77 635F 
+ 3234      7374 6174 
+ 3234      6500 
+ 3235               	.LASF12:
+ 3236 080d 5F6E 6578 	.string"_next_ticket"
+ 3236      745F 7469 
+68K GAS   			page 73
+
+
+ 3236      636B 6574 
+ 3236      00
+ 3237               	.LASF90:
+ 3238 081a 5F6C 6F63 	.string"_locale"
+ 3238      616C 6500 
+ 3239               	.LASF148:
+ 3240 0822 5265 7365 	.string"ResetMemory"
+ 3240      744D 656D 
+ 3240      6F72 7900 
+ 3241               	.LASF175:
+ 3242 082e 5369 7A65 	.string"SizeOfUserArea"
+ 3242      4F66 5573 
+ 3242      6572 4172 
+ 3242      6561 00
+ 3243               	.LASF30:
+ 3244 083d 5F73 7369 	.string"_ssize_t"
+ 3244      7A65 5F74 
+ 3244      00
+ 3245               	.LASF0:
+ 3246 0846 7369 676E 	.string"signed char"
+ 3246      6564 2063 
+ 3246      6861 7200 
+ 3247               	.LASF82:
+ 3248 0852 5F72 6565 	.string"_reent"
+ 3248      6E74 00
+ 3249               	.LASF3:
+ 3250 0859 7368 6F72 	.string"short unsigned int"
+ 3250      7420 756E 
+ 3250      7369 676E 
+ 3250      6564 2069 
+ 3250      6E74 00
+ 3251               	.LASF180:
+ 3252 086c 5074 7254 	.string"PtrToDataToRead"
+ 3252      6F44 6174 
+ 3252      6154 6F52 
+ 3252      6561 6400 
+ 3253               	.LASF151:
+ 3254 087c 5573 6572 	.string"UserReservedMemory"
+ 3254      5265 7365 
+ 3254      7276 6564 
+ 3254      4D65 6D6F 
+ 3254      7279 00
+ 3255               	.LASF173:
+ 3256 088f 4346 455F 	.string"CFE_PSP_GetUserReservedArea"
+ 3256      5053 505F 
+ 3256      4765 7455 
+ 3256      7365 7252 
+ 3256      6573 6572 
+ 3257               	.LASF57:
+ 3258 08ab 5F66 6E74 	.string"_fntypes"
+ 3258      7970 6573 
+ 3258      00
+ 3259               	.LASF64:
+ 3260 08b4 5F73 697A 	.string"_size"
+ 3260      6500 
+ 3261               	.LASF145:
+ 3262 08ba 7370 6172 	.string"spare1"
+68K GAS   			page 74
+
+
+ 3262      6531 00
+ 3263               	.LASF146:
+ 3264 08c1 7370 6172 	.string"spare2"
+ 3264      6532 00
+ 3265               	.LASF147:
+ 3266 08c8 7370 6172 	.string"spare3"
+ 3266      6533 00
+ 3267               	.LASF10:
+ 3268 08cf 5F6F 6666 	.string"_off_t"
+ 3268      5F74 00
+ 3269               	.LASF13:
+ 3270 08d6 5F6E 6F77 	.string"_now_serving"
+ 3270      5F73 6572 
+ 3270      7669 6E67 
+ 3270      00
+ 3271               	.LASF110:
+ 3272 08e3 5F75 6E75 	.string"_unused_rand"
+ 3272      7365 645F 
+ 3272      7261 6E64 
+ 3272      00
+ 3273               	.LASF89:
+ 3274 08f0 5F75 6E73 	.string"_unspecified_locale_info"
+ 3274      7065 6369 
+ 3274      6669 6564 
+ 3274      5F6C 6F63 
+ 3274      616C 655F 
+ 3275               	.LASF81:
+ 3276 0909 5F66 6C61 	.string"_flags2"
+ 3276      6773 3200 
+ 3277               	.LASF155:
+ 3278 0911 6D61 6C6C 	.string"malloc_argv"
+ 3278      6F63 5F61 
+ 3278      7267 7600 
+ 3279               	.LASF58:
+ 3280 091d 5F69 735F 	.string"_is_cxa"
+ 3280      6378 6100 
+ 3281               	.LASF107:
+ 3282 0925 5F73 6565 	.string"_seed"
+ 3282      6400 
+ 3283               	.LASF115:
+ 3284 092b 5F72 616E 	.string"_rand_next"
+ 3284      645F 6E65 
+ 3284      7874 00
+ 3285               	.LASF132:
+ 3286 0936 5F5F 6C6F 	.string"__locale_t"
+ 3286      6361 6C65 
+ 3286      5F74 00
+ 3287               	.LASF72:
+ 3288 0941 5F73 6565 	.string"_seek"
+ 3288      6B00 
+ 3289               	.LASF86:
+ 3290 0947 5F73 7464 	.string"_stderr"
+ 3290      6572 7200 
+ 3291               	.LASF130:
+ 3292 094f 5F6E 6D61 	.string"_nmalloc"
+ 3292      6C6C 6F63 
+ 3292      00
+68K GAS   			page 75
+
+
+ 3293               	.LASF74:
+ 3294 0958 5F75 6275 	.string"_ubuf"
+ 3294      6600 
+ 3295               	.LASF176:
+ 3296 095e 4346 455F 	.string"CFE_PSP_GetResetArea"
+ 3296      5053 505F 
+ 3296      4765 7452 
+ 3296      6573 6574 
+ 3296      4172 6561 
+ 3297               	.ident"GCC: (GNU) 7.3.0 20180125 (RTEMS 5, RSB d2b25d131d55adcb38219f2cd8cbec2436ee78ab, Newlib 3.0.0)"
+68K GAS   			page 76
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 cfe_psp_memory.c
+                            *COM*:0000000000000004 CFE_PSP_ReservedMemoryPtr
+    {standard input}:10     .text:0000000000000000 CFE_PSP_GetCDSSize
+    {standard input}:41     .text:0000000000000022 CFE_PSP_WriteToCDS
+    {standard input}:100    .text:000000000000008e CFE_PSP_ReadFromCDS
+    {standard input}:159    .text:00000000000000fa CFE_PSP_GetResetArea
+    {standard input}:198    .text:0000000000000136 CFE_PSP_GetUserReservedArea
+    {standard input}:237    .text:0000000000000172 CFE_PSP_GetVolatileDiskMem
+    {standard input}:280    .text:00000000000001ae CFE_PSP_InitProcessorReservedMemory
+    {standard input}:324    .text:00000000000001f4 CFE_PSP_GetKernelTextSegmentInfo
+    {standard input}:368    .text:0000000000000238 CFE_PSP_GetCFETextSegmentInfo
+    {standard input}:430    .text:000000000000027c CFE_PSP_MemReport
+
+UNDEFINED SYMBOLS
+memcpy
+OS_printf
+memset
+rtems_shell_main_malloc_info
+rtems_shell_main_wkspace_info

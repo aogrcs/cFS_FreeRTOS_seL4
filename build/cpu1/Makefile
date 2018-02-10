@@ -97,8 +97,8 @@ export CFS_RAM:=$(CFS_EXE)/ram
 # Define the Executable file extensions for copies
 # This should match the type of system being compiled
 # 
-export CFE_CORE_EXE_TYPE:=bin
-export CFS_APP_EXE_TYPE:=so
+export CFE_CORE_EXE_TYPE:=elf
+export CFS_APP_EXE_TYPE:=o
 
 #===============================================================================
 # Top-level build rules

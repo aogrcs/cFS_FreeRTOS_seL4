@@ -44,7 +44,8 @@
 #ifdef OS_STATIC_LOADER
    #include "loadstaticloadfile.h"
 #else
-   #include <cexp.h>
+   //#include <cexp.h>
+   #include "/home/simulink/rtems-cexp/cexp.h"
 #endif
 
 /****************************************************************************************

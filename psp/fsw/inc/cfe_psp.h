@@ -177,7 +177,9 @@ typedef struct
 /*
 ** PSP entry point and reset routines
 */
-extern void          CFE_PSP_Main(uint32 ModeId, char *StartupFilePath);
+/* extern void          CFE_PSP_Main(uint32 ModeId, char *StartupFilePath);
+*/
+void          CFE_PSP_Main(int ModeId, char *StartupFilePath);
 
 /*
 ** CFE_PSP_Main is the entry point that the real time OS calls to start our
@@ -284,31 +286,49 @@ extern int32 CFE_PSP_ReadFromCDS(void *PtrToDataToRead, uint32 CDSOffset, uint32
 ** CFE_PSP_ReadFromCDS reads from the CDS Block
 */
 
+/*
 extern int32 CFE_PSP_GetResetArea (cpuaddr *PtrToResetArea, uint32 *SizeOfResetArea);
+*/
+int32 CFE_PSP_GetResetArea (void *PtrToResetArea, uint32 *SizeOfResetArea);
+
 /*
 ** CFE_PSP_GetResetArea returns the location and size of the ES Reset information area.
 ** This area is preserved during a processor reset and is used to store the
 ** ER Log, System Log and reset related variables
 */
 
-extern int32 CFE_PSP_GetUserReservedArea(cpuaddr *PtrToUserArea, uint32 *SizeOfUserArea );
+/*extern int32 CFE_PSP_GetUserReservedArea(cpuaddr *PtrToUserArea, uint32 *SizeOfUserArea );
+*/
+int32 CFE_PSP_GetUserReservedArea(void *PtrToUserArea, uint32 *SizeOfUserArea );
+
 /*
 ** CFE_PSP_GetUserReservedArea returns the location and size of the memory used for the cFE
 ** User reserved area.
 */
 
-extern int32 CFE_PSP_GetVolatileDiskMem(cpuaddr *PtrToVolDisk, uint32 *SizeOfVolDisk );
+/*extern int32 CFE_PSP_GetVolatileDiskMem(cpuaddr *PtrToVolDisk, uint32 *SizeOfVolDisk );
+*/
+int32 CFE_PSP_GetVolatileDiskMem(void *PtrToVolDisk, uint32 *SizeOfVolDisk );
+
 /*
 ** CFE_PSP_GetVolatileDiskMem returns the location and size of the memory used for the cFE
 ** volatile disk.
 */
 
+/*
 extern int32 CFE_PSP_GetKernelTextSegmentInfo(cpuaddr *PtrToKernelSegment, uint32 *SizeOfKernelSegment);
+*/
+int32 CFE_PSP_GetKernelTextSegmentInfo(void *PtrToKernelSegment, uint32 *SizeOfKernelSegment);
+
 /*
 ** CFE_PSP_GetKernelTextSegmentInfo returns the location and size of the kernel memory.
 */
 
+/*
 extern int32 CFE_PSP_GetCFETextSegmentInfo(cpuaddr *PtrToCFESegment, uint32 *SizeOfCFESegment);
+*/
+int32 CFE_PSP_GetCFETextSegmentInfo(void *PtrToCFESegment, uint32 *SizeOfCFESegment);
+
 /*
 ** CFE_PSP_GetCFETextSegmentInfo returns the location and size of the kernel memory.
 */
