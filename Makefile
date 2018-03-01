@@ -2,7 +2,7 @@
 # It is unrelated to Value's Makefile.
 
 DESTDIR=/usr/local
-PREFIX=polarssl_
+PREFIX=cFS_FreeRTOS_seL4__
 
 .SILENT:
 
