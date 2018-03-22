@@ -29,7 +29,7 @@ ENDIAN_DEFS=-D_EB -DENDIAN=_EB -DSOFTWARE_BIG_BIT_ORDER
 ## Compiler Architecture Switches ( double check arch switch -m52xx, m523x etc.. )
 ## 
 ## ARCH_OPTS = --pipe -fomit-frame-pointer -malign-int -m528x  -B/opt/rtems-devkit/rtems-bsps/rtems-4.10/m68k-rtems4.10/mcf5235/lib/ -specs bsp_specs -qrtems
-ARCH_OPTS = --pipe -fomit-frame-pointer -malign-int -m528x  -B/home/simulink/development/rtems/rtems-build/m68k-rtems5/mcf5235/lib -specs bsp_specs -qrtems
+ARCH_OPTS = --pipe -fomit-frame-pointer -malign-int -m528x  -B/home/simulink/RTEMS411/rtems/src/rtems-build/m68k-rtems4.11/mcf5235/lib -specs bsp_specs -qrtems
 
 ##
 ## Application specific compiler switches 
@@ -68,7 +68,7 @@ ASOPTS = $(APP_ASOPTS) -P -xassembler-with-cpp
 ## Known extentions: Mac OS X: .bundle, Linux: .so, RTEMS:
 ##   .s3r, vxWorks: .o etc.. 
 ##---------------------------------------------------------
-APP_EXT = o
+APP_EXT = s3r
 
 ####################################################
 ## Host Development System and Toolchain defintions
@@ -81,16 +81,10 @@ CP=cp
 ##
 ## Compiler tools
 ##
-## COMPILER  = m68k-rtems4.10-gcc
-COMPILER  = m68k-rtems5-gcc
-## ASSEMBLER  = m68k-rtems4.10-gcc
-ASSEMBLER  = m68k-rtems5-gcc
-#LINKER	  = m68k-rtems4.10-ld
-LINKER	  = m68k-rtems5-ld
-## AR	  = m68k-rtems4.10-ar
-AR	  = m68k-rtems5-ar
-## NM        = m68k-rtems4.10-nm
-NM        = m68k-rtems5-nm
-## OBJCPY    = m68k-rtems4.10-objcopy
-OBJCPY    = m68k-rtems5-objcopy
+COMPILER  = m68k-rtems4.11-gcc
+ASSEMBLER  = m68k-rtems4.11-gcc
+LINKER	  = m68k-rtems4.11-ld
+AR	  = m68k-rtems4.11-ar
+NM        = m68k-rtems4.11-nm
+OBJCPY    = m68k-rtems4.11-objcopy
 TABLE_BIN = elf2cfetbl
